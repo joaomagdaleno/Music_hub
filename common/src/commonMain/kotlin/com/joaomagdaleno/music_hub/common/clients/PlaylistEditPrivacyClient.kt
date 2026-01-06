@@ -1,0 +1,19 @@
+package com.joaomagdaleno.music_hub.common.clients
+
+import com.joaomagdaleno.music_hub.common.models.Playlist
+
+/**
+ * Used to edit the privacy of a playlist.
+ *
+ * @see Playlist.isPrivate
+ * @see PlaylistEditClient
+ */
+interface PlaylistEditPrivacyClient : PlaylistEditClient {
+    /**
+     * Sets the privacy of a playlist.
+     *
+     * @param playlist the playlist to set the privacy of.
+     * @param isPrivate whether the playlist should be private.
+     */
+    suspend fun setPrivacy(playlist: Playlist, isPrivate: Boolean)
+}
