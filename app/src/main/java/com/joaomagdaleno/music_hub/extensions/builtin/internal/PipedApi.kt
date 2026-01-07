@@ -59,7 +59,7 @@ class PipedApi(private val client: OkHttpClient = OkHttpClient()) {
                     val items = data["items"]?.jsonArray ?: return emptyList()
                     items.mapNotNull { 
                         try {
-                            json.decodeFromJsonElement<PipedSearchResult>(it)
+                            json.decodeFromJsonElement(PipedSearchResult.serializer(), it)
                         } catch (e: Exception) {
                             null
                         }
@@ -103,7 +103,7 @@ class PipedApi(private val client: OkHttpClient = OkHttpClient()) {
             val items = data["relatedStreams"]?.jsonArray ?: return emptyList()
             items.mapNotNull {
                 try {
-                    json.decodeFromJsonElement<PipedSearchResult>(it)
+                    json.decodeFromJsonElement(PipedSearchResult.serializer(), it)
                 } catch (e: Exception) {
                     null
                 }
@@ -126,7 +126,7 @@ class PipedApi(private val client: OkHttpClient = OkHttpClient()) {
             val items = data["relatedStreams"]?.jsonArray ?: return emptyList()
             items.mapNotNull {
                 try {
-                    json.decodeFromJsonElement<PipedSearchResult>(it)
+                    json.decodeFromJsonElement(PipedSearchResult.serializer(), it)
                 } catch (e: Exception) {
                     null
                 }
@@ -151,7 +151,7 @@ class PipedApi(private val client: OkHttpClient = OkHttpClient()) {
             val items = json.parseToJsonElement(responseBody).jsonArray
             items.mapNotNull {
                 try {
-                    json.decodeFromJsonElement<PipedSearchResult>(it)
+                    json.decodeFromJsonElement(PipedSearchResult.serializer(), it)
                 } catch (e: Exception) {
                     null
                 }

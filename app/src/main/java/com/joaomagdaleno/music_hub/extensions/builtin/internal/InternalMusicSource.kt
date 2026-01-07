@@ -10,6 +10,7 @@ import com.joaomagdaleno.music_hub.common.clients.SearchFeedClient
 import com.joaomagdaleno.music_hub.common.clients.TrackClient
 import com.joaomagdaleno.music_hub.common.models.*
 import com.joaomagdaleno.music_hub.common.models.Streamable.Media.Companion.toServerMedia
+import com.joaomagdaleno.music_hub.common.helpers.PagedData
 import com.joaomagdaleno.music_hub.common.settings.Setting
 import com.joaomagdaleno.music_hub.common.settings.SettingCategory
 import com.joaomagdaleno.music_hub.common.settings.SettingSwitch
@@ -103,7 +104,7 @@ class InternalMusicSource : ExtensionClient, SearchFeedClient, TrackClient, Albu
                     title = result.title,
                     album = result.album?.let { Album(id = "slavart_album:${result.id}", title = it, artists = listOf()) },
                     artists = listOf(Artist(id = "slavart_artist:${result.artist}", name = result.artist)),
-                    cover = result.thumbnail?.let { ImageHolder.Url(it) },
+                    cover = result.thumbnail?.let { ImageHolder.NetworkRequestImageHolder(NetworkRequest(it), false) },
                     isPlayable = Track.Playable.Yes,
                     duration = result.duration?.toLong()?.times(1000), // ms
                     extras = mapOf(
@@ -114,15 +115,13 @@ class InternalMusicSource : ExtensionClient, SearchFeedClient, TrackClient, Albu
                 )
             }
 
-            val shelf = Shelf(
+            val shelf = Shelf.Lists.Tracks(
+                id = "slavart_results",
                 title = "SlavArt Results",
-                list = tracks,
-                type = Shelf.Type.Tracks
+                list = tracks
             )
 
-            return Feed.Data(
-                PagedData.Single { listOf(shelf) }
-            ).toFeed()
+            return Feed(tabs = emptyList(), getPagedData = { Feed.Data(PagedData.Single { listOf(shelf) }) })
         }
 
         // 2. Try YouTube Cascade
@@ -133,15 +132,13 @@ class InternalMusicSource : ExtensionClient, SearchFeedClient, TrackClient, Albu
         }
 
         val shelfTitle = if (youtubeTracks.isNotEmpty()) "YouTube Results" else "No results found"
-        val shelf = Shelf(
+        val shelf = Shelf.Lists.Tracks(
+            id = "youtube_results",
             title = shelfTitle,
-            list = youtubeTracks,
-            type = Shelf.Type.Tracks
+            list = youtubeTracks
         )
 
-        return Feed.Data(
-            PagedData.Single { listOf(shelf) }
-        ).toFeed()
+        return Feed(tabs = emptyList(), getPagedData = { Feed.Data(PagedData.Single { listOf(shelf) }) })
     }
 
     private suspend fun youtubeCascadeSearch(query: String): List<Track> {
@@ -178,7 +175,7 @@ class InternalMusicSource : ExtensionClient, SearchFeedClient, TrackClient, Albu
                 id = videoId,
                 title = res.title ?: "Unknown",
                 artists = listOf(Artist(id = res.uploaderUrl?.substringAfterLast("/")?.let { "youtube_channel:$it" } ?: "unknown", name = res.uploaderName ?: "Unknown")),
-                cover = res.thumbnail?.let { ImageHolder.Url(it) },
+                cover = res.thumbnail?.let { ImageHolder.NetworkRequestImageHolder(NetworkRequest(it), false) },
                 duration = res.duration?.times(1000),
                 isPlayable = Track.Playable.Yes,
                 extras = mapOf(
@@ -227,7 +224,7 @@ class InternalMusicSource : ExtensionClient, SearchFeedClient, TrackClient, Albu
                     title = result.title,
                     album = album,
                     artists = listOf(Artist(id = "slavart_artist:${result.artist}", name = result.artist)),
-                    cover = result.thumbnail?.let { ImageHolder.Url(it) },
+                    cover = result.thumbnail?.let { ImageHolder.NetworkRequestImageHolder(NetworkRequest(it), false) },
                     isPlayable = Track.Playable.Yes,
                     duration = result.duration?.toLong()?.times(1000),
                     extras = mapOf(
@@ -237,7 +234,7 @@ class InternalMusicSource : ExtensionClient, SearchFeedClient, TrackClient, Albu
                     )
                 )
             }
-            return PagedData.Single { tracks }.toFeed()
+            return Feed(tabs = emptyList(), getPagedData = { Feed.Data(PagedData.Single { tracks }) })
         } else if (album.id.startsWith("youtube_playlist:")) {
             val realId = album.id.removePrefix("youtube_playlist:")
             val results = piped.getPlaylistTracks(realId)
@@ -247,7 +244,7 @@ class InternalMusicSource : ExtensionClient, SearchFeedClient, TrackClient, Albu
                     id = videoId,
                     title = res.title ?: "Unknown",
                     artists = listOf(Artist(id = res.uploaderUrl?.substringAfterLast("/")?.let { "youtube_channel:$it" } ?: "unknown", name = res.uploaderName ?: "Unknown")),
-                    cover = res.thumbnail?.let { ImageHolder.Url(it) },
+                    cover = res.thumbnail?.let { ImageHolder.NetworkRequestImageHolder(NetworkRequest(it), false) },
                     duration = res.duration?.times(1000),
                     isPlayable = Track.Playable.Yes,
                     extras = mapOf(
@@ -256,7 +253,7 @@ class InternalMusicSource : ExtensionClient, SearchFeedClient, TrackClient, Albu
                     )
                 )
             }
-            return PagedData.Single { tracks }.toFeed()
+            return Feed(tabs = emptyList(), getPagedData = { Feed.Data(PagedData.Single { tracks }) })
         }
         return null
     }
@@ -280,7 +277,7 @@ class InternalMusicSource : ExtensionClient, SearchFeedClient, TrackClient, Albu
                         title = result.title,
                         album = result.album?.let { Album(id = "slavart_album:${result.id}", title = it, artists = listOf()) },
                         artists = listOf(artist),
-                        cover = result.thumbnail?.let { ImageHolder.Url(it) },
+                        cover = result.thumbnail?.let { ImageHolder.NetworkRequestImageHolder(NetworkRequest(it), false) },
                         isPlayable = Track.Playable.Yes,
                         duration = result.duration?.toLong()?.times(1000),
                         extras = mapOf(
@@ -290,7 +287,7 @@ class InternalMusicSource : ExtensionClient, SearchFeedClient, TrackClient, Albu
                         )
                     )
                 }
-                shelves.add(Shelf("Popular Tracks", tracks, Shelf.Type.Tracks))
+                shelves.add(Shelf.Lists.Tracks("popular_tracks", "Popular Tracks", tracks))
             }
 
             if (info.albums.isNotEmpty()) {
@@ -298,11 +295,11 @@ class InternalMusicSource : ExtensionClient, SearchFeedClient, TrackClient, Albu
                     Album(
                         id = "slavart_album:${result.id}",
                         title = result.title ?: result.name ?: "Unknown",
-                        cover = result.cover?.let { ImageHolder.Url(it) },
+                        cover = result.cover?.let { ImageHolder.NetworkRequestImageHolder(NetworkRequest(it), false) },
                         artists = listOf(artist)
                     )
                 }
-                shelves.add(Shelf("Albums", albums, Shelf.Type.Grid))
+                shelves.add(Shelf.Lists.Items("albums", "Albums", albums, type = Shelf.Lists.Type.Grid))
             }
         } else if (artist.id.startsWith("youtube_channel:")) {
             val realId = artist.id.removePrefix("youtube_channel:")
@@ -314,7 +311,7 @@ class InternalMusicSource : ExtensionClient, SearchFeedClient, TrackClient, Albu
                     id = videoId,
                     title = res.title ?: "Unknown",
                     artists = listOf(artist),
-                    cover = res.thumbnail?.let { ImageHolder.Url(it) },
+                    cover = res.thumbnail?.let { ImageHolder.NetworkRequestImageHolder(NetworkRequest(it), false) },
                     duration = res.duration?.times(1000),
                     isPlayable = Track.Playable.Yes,
                     extras = mapOf(
@@ -324,11 +321,11 @@ class InternalMusicSource : ExtensionClient, SearchFeedClient, TrackClient, Albu
                 )
             }
             if (tracks.isNotEmpty()) {
-                shelves.add(Shelf("Latest Uploads", tracks, Shelf.Type.Tracks))
+                shelves.add(Shelf.Lists.Tracks("latest_uploads", "Latest Uploads", tracks))
             }
         }
 
-        return PagedData.Single { shelves }.toFeed()
+        return Feed(tabs = emptyList(), getPagedData = { Feed.Data(PagedData.Single { shelves }) })
     }
 
     // --- HomeFeedClient ---
@@ -350,7 +347,7 @@ class InternalMusicSource : ExtensionClient, SearchFeedClient, TrackClient, Albu
                             id = videoId,
                             title = res.title ?: "Unknown",
                             artists = listOf(Artist(id = res.uploaderUrl?.substringAfterLast("/")?.let { "youtube_channel:$it" } ?: "unknown", name = res.uploaderName ?: "Unknown")),
-                            cover = res.thumbnail?.let { ImageHolder.Url(it) },
+                            cover = res.thumbnail?.let { ImageHolder.NetworkRequestImageHolder(NetworkRequest(it), false) },
                             duration = res.duration?.times(1000),
                             isPlayable = Track.Playable.Yes,
                             extras = mapOf(
@@ -359,7 +356,7 @@ class InternalMusicSource : ExtensionClient, SearchFeedClient, TrackClient, Albu
                             )
                         )
                     }
-                    shelves.add(Shelf("Popular on YouTube", tracks, Shelf.Type.Grid))
+                    shelves.add(Shelf.Lists.Tracks("trending_youtube", "Popular on YouTube", tracks, type = Shelf.Lists.Type.Grid))
                 }
             }
             "discovery" -> {
@@ -371,7 +368,7 @@ class InternalMusicSource : ExtensionClient, SearchFeedClient, TrackClient, Albu
                             title = result.title,
                             album = result.album?.let { Album(id = "slavart_album:${result.id}", title = it, artists = listOf()) },
                             artists = listOf(Artist(id = "slavart_artist:${result.artist}", name = result.artist)),
-                            cover = result.thumbnail?.let { ImageHolder.Url(it) },
+                            cover = result.thumbnail?.let { ImageHolder.NetworkRequestImageHolder(NetworkRequest(it), false) },
                             isPlayable = Track.Playable.Yes,
                             duration = result.duration?.toLong()?.times(1000),
                             extras = mapOf(
@@ -381,11 +378,11 @@ class InternalMusicSource : ExtensionClient, SearchFeedClient, TrackClient, Albu
                             )
                         )
                     }
-                    shelves.add(Shelf("High Quality Picks", tracks, Shelf.Type.Grid))
+                    shelves.add(Shelf.Lists.Tracks("discovery_slavart", "High Quality Picks", tracks, type = Shelf.Lists.Type.Grid))
                 }
             }
         }
-        PagedData.Single { shelves }.toFeedData()
+        Feed.Data(PagedData.Single { shelves })
     }
 
     // --- LyricsClient ---
@@ -395,7 +392,7 @@ class InternalMusicSource : ExtensionClient, SearchFeedClient, TrackClient, Albu
         val duration = track.duration?.div(1000)?.toInt()
 
         val rawLrc = lrcLib.getLyrics(title, artist, duration)
-        if (rawLrc == null) return PagedData.Single { emptyList<Lyrics>() }.toFeed()
+        if (rawLrc == null) return Feed(tabs = emptyList(), getPagedData = { Feed.Data(PagedData.Single { emptyList<Lyrics>() }) })
 
         val lyrics = Lyrics(
             id = "lrclib:${track.id}",
@@ -403,7 +400,7 @@ class InternalMusicSource : ExtensionClient, SearchFeedClient, TrackClient, Albu
             subtitle = artist,
             lyrics = lrcLib.parseLrc(rawLrc)
         )
-        return PagedData.Single { listOf(lyrics) }.toFeed()
+        return Feed(tabs = emptyList(), getPagedData = { Feed.Data(PagedData.Single { listOf(lyrics) }) })
     }
 
     override suspend fun loadLyrics(lyrics: Lyrics): Lyrics {

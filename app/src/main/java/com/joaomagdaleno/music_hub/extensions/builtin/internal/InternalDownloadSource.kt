@@ -11,6 +11,7 @@ import com.joaomagdaleno.music_hub.common.models.Metadata
 import com.joaomagdaleno.music_hub.common.models.Progress
 import com.joaomagdaleno.music_hub.common.models.Streamable
 import com.joaomagdaleno.music_hub.common.models.Track
+import com.joaomagdaleno.music_hub.common.models.ImageHolder
 import com.joaomagdaleno.music_hub.common.settings.Setting
 import com.joaomagdaleno.music_hub.common.settings.Settings
 import com.joaomagdaleno.music_hub.common.helpers.ContinuationCallback.Companion.await
@@ -139,7 +140,7 @@ class InternalDownloadSource(
             title = track.title,
             artist = track.artists.joinToString(", ") { it.name },
             album = track.album?.title,
-            coverUrl = track.cover?.url,
+            coverUrl = (track.cover as? ImageHolder.NetworkRequestImageHolder)?.request?.url,
             lyrics = lyrics
         )
         
