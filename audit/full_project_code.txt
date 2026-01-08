@@ -1,6 +1,6 @@
 ================================================================================
 PROJECT CONSOLIDATION REPORT: MUSIC_HUB
-DATE: 2026-01-06 21:47:49
+DATE: 2026-01-08 15:04:33
 ================================================================================
 
 ---------- FILE: build.gradle.kts ----------
@@ -15,9 +15,12 @@ plugins {
 
 ---------- FILE: gradle.properties ----------
 #Gradle
-org.gradle.jvmargs=-Xmx2048M -Dfile.encoding=UTF-8
+org.gradle.jvmargs=-Xmx4G -XX:MaxMetaspaceSize=1G -Dfile.encoding=UTF-8
+org.gradle.parallel=true
 org.gradle.caching=true
 org.gradle.configuration-cache=true
+org.gradle.configureondemand=true
+org.gradle.daemon=true
 #Kotlin
 kotlin.code.style=official
 kotlin.daemon.jvmargs=-Xmx2048M
@@ -59,6 +62,48 @@ This Unabandon Public License (UPL) is designed to ensure the continued developm
     Termination
 ```
 This UPL terminates automatically if the terms and conditions are not followed by the licensee.
+
+---------- FILE: publish.ps1 ----------
+# Music Hub - Script de Publicação 🚀
+
+# 1. Configurações da Chave (Edite se quiser mudar as senhas)
+$KEYSTORE_NAME = "music_hub.jks"
+$KEYSTORE_PASSWORD = "password123"
+$KEY_ALIAS = "music_hub_key"
+$KEY_PASSWORD = "password123"
+
+Write-Host "--- Preparando o APK de Produção ---" -ForegroundColor Cyan
+
+# 2. Gerar KeyStore se não existir
+if (-not (Test-Path $KEYSTORE_NAME)) {
+    Write-Host "(!) KeyStore não encontrada. Gerando uma nova..." -ForegroundColor Yellow
+    keytool -genkey -v -keystore $KEYSTORE_NAME -alias $KEY_ALIAS -keyalg RSA -keysize 2048 -validity 10000 `
+            -storepass $KEYSTORE_PASSWORD -keypass $KEY_PASSWORD `
+            -dname "CN=Joao Magdaleno, OU=Music Hub, O=Music Hub, L=Lisbon, S=Lisbon, C=PT"
+    Write-Host "(+) KeyStore gerada com sucesso: $KEYSTORE_NAME" -ForegroundColor Green
+}
+
+# 3. Configurar Variáveis de Ambiente para o Gradle
+$env:KEYSTORE_PATH = (Resolve-Path $KEYSTORE_NAME).Path
+$env:KEYSTORE_PASSWORD = $KEYSTORE_PASSWORD
+$env:KEY_ALIAS = $KEY_ALIAS
+$env:KEY_PASSWORD = $KEY_PASSWORD
+
+# 4. Compilar o APK
+Write-Host "--- Compilando APK Release (Signed) ---" -ForegroundColor Cyan
+./gradlew assembleRelease
+
+# 5. Resultado
+if ($LASTEXITCODE -eq 0) {
+    Write-Host "`n🏆 SUCESSO! O seu APK está pronto em:" -ForegroundColor Green
+    $apkPath = "app\build\outputs\apk\release\app-release.apk"
+    if (Test-Path $apkPath) {
+        Write-Host (Resolve-Path $apkPath).Path -ForegroundColor White
+    }
+} else {
+    Write-Host "`n❌ Erro durante a compilação." -ForegroundColor Red
+}
+
 
 ---------- FILE: README.md ----------
 # Music Hub
@@ -632,12 +677,28 @@ android {
         versionName = "v${version}_$gitHash($gitCount)"
     }
 
+    signingConfigs {
+        create("release") {
+            val path = System.getenv("KEYSTORE_PATH")
+            if (path != null) {
+                storeFile = file(path)
+                storePassword = System.getenv("KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("KEY_ALIAS")
+                keyPassword = System.getenv("KEY_PASSWORD")
+            }
+        }
+    }
+
     buildTypes {
         release {
+            if (signingConfigs.getByName("release").storeFile != null) {
+                signingConfig = signingConfigs.getByName("release")
+            }
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
             )
         }
         create("nightly") {
@@ -647,6 +708,9 @@ android {
         }
         create("stable") {
             initWith(getByName("release"))
+            if (signingConfigs.getByName("release").storeFile != null) {
+                signingConfig = signingConfigs.getByName("release")
+            }
         }
     }
 
@@ -689,6 +753,7 @@ dependencies {
     implementation(libs.kenburnsview)
     implementation(libs.nestedscrollwebview)
     implementation(libs.acsbendi.webview)
+    implementation(libs.jaudiotagger)
 
     if (!hasGoogleServices) return@dependencies
     implementation(libs.bundles.firebase)
@@ -1260,6 +1325,8 @@ import com.joaomagdaleno.music_hub.download.DownloadWorker
 import com.joaomagdaleno.music_hub.download.Downloader
 import com.joaomagdaleno.music_hub.download.db.DownloadDatabase
 import com.joaomagdaleno.music_hub.extensions.ExtensionLoader
+import com.joaomagdaleno.music_hub.extensions.builtin.internal.InternalDownloadSource
+import com.joaomagdaleno.music_hub.extensions.builtin.internal.InternalMusicSource
 import com.joaomagdaleno.music_hub.playback.PlayerService
 import com.joaomagdaleno.music_hub.playback.PlayerState
 import com.joaomagdaleno.music_hub.ui.common.SnackBarHandler
@@ -1292,6 +1359,8 @@ object DI {
     private val baseModule = module {
         single { androidApplication().getSettings() }
         singleOf(::App)
+        singleOf(::InternalMusicSource)
+        single { InternalDownloadSource(androidApplication()) }
     }
 
     private val extensionModule = module {
@@ -2298,6 +2367,8 @@ import com.joaomagdaleno.music_hub.di.App
 import com.joaomagdaleno.music_hub.extensions.ExtensionUtils.get
 import com.joaomagdaleno.music_hub.extensions.ExtensionUtils.getOrThrow
 import com.joaomagdaleno.music_hub.extensions.ExtensionUtils.inject
+import com.joaomagdaleno.music_hub.extensions.builtin.internal.InternalDownloadSource
+import com.joaomagdaleno.music_hub.extensions.builtin.internal.InternalMusicSource
 import com.joaomagdaleno.music_hub.extensions.builtin.offline.OfflineExtension
 import com.joaomagdaleno.music_hub.extensions.builtin.unified.UnifiedExtension
 import com.joaomagdaleno.music_hub.extensions.db.ExtensionDatabase
@@ -2323,6 +2394,8 @@ import java.io.File
 class ExtensionLoader(
     val app: App,
     val cache: SimpleCache,
+    val internalSource: InternalMusicSource,
+    val internalDownloadSource: InternalDownloadSource,
 ) {
     val parser = ExtensionParser(app.context)
     val scope = CoroutineScope(Dispatchers.IO)
@@ -2347,6 +2420,8 @@ class ExtensionLoader(
     private val repository = CombinedRepository(
         scope, app.context, fileIgnoreFlow, parser,
         UnifiedExtension.metadata to unified,
+        InternalMusicSource.metadata to lazy { internalSource },
+        InternalDownloadSource.metadata to lazy { internalDownloadSource },
         OfflineExtension.metadata to lazy { OfflineExtension(app.context) },
 //        TestExtension.metadata to lazy { TestExtension() },
 //        DownloadExtension.metadata to lazy { DownloadExtension(app.context) }
@@ -2362,9 +2437,10 @@ class ExtensionLoader(
 
     val current = MutableStateFlow<MusicExtension?>(null)
     private fun setCurrentExtension() {
-        val last = settings.getString(LAST_EXTENSION_KEY, null)
+        val last = settings.getString(LAST_EXTENSION_KEY, null) ?: InternalMusicSource.INTERNAL_ID
         val list = music.value
         val extension = list.find { it.id == last && it.isEnabled }
+            ?: list.find { it.id == InternalMusicSource.INTERNAL_ID && it.isEnabled }
             ?: list.firstOrNull { it.isEnabled }
             ?: return
         setupMusicExtension(extension, false)
@@ -2891,6 +2967,1097 @@ class WebViewClientFactory(
     )
 
 }
+
+---------- FILE: app\src\main\java\com\joaomagdaleno\music_hub\extensions\builtin\internal\InternalDownloadSource.kt ----------
+package com.joaomagdaleno.music_hub.extensions.builtin.internal
+
+import android.content.Context
+import android.os.Environment
+import com.joaomagdaleno.music_hub.common.clients.DownloadClient
+import com.joaomagdaleno.music_hub.common.models.DownloadContext
+import com.joaomagdaleno.music_hub.common.models.EchoMediaItem
+import com.joaomagdaleno.music_hub.common.models.ExtensionType
+import com.joaomagdaleno.music_hub.common.models.ImportType
+import com.joaomagdaleno.music_hub.common.models.Metadata
+import com.joaomagdaleno.music_hub.common.models.Progress
+import com.joaomagdaleno.music_hub.common.models.Streamable
+import com.joaomagdaleno.music_hub.common.models.Track
+import com.joaomagdaleno.music_hub.common.models.ImageHolder
+import com.joaomagdaleno.music_hub.common.settings.Setting
+import com.joaomagdaleno.music_hub.common.settings.Settings
+import com.joaomagdaleno.music_hub.common.helpers.ContinuationCallback.Companion.await
+import com.joaomagdaleno.music_hub.utils.TagInjector
+import kotlinx.coroutines.flow.MutableStateFlow
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import java.io.File
+import java.io.FileOutputStream
+
+class InternalDownloadSource(
+    private val context: Context
+) : DownloadClient {
+
+    companion object {
+        const val INTERNAL_DOWNLOAD_ID = "internal_downloader"
+        val metadata = Metadata(
+            className = "com.joaomagdaleno.music_hub.extensions.builtin.internal.InternalDownloadSource",
+            path = "",
+            importType = ImportType.BuiltIn,
+            type = ExtensionType.MISC,
+            id = INTERNAL_DOWNLOAD_ID,
+            name = "Music Hub Downloader",
+            version = "1.0.0",
+            description = "Internal downloader with metadata tagging support",
+            author = "João Magdaleno",
+            isEnabled = true
+        )
+    }
+
+    private val client = OkHttpClient()
+    private val lrcLib = LrcLibApi(client)
+
+    override val concurrentDownloads = 3
+
+    override suspend fun getDownloadTracks(
+        extensionId: String,
+        item: EchoMediaItem,
+        context: EchoMediaItem?
+    ): List<DownloadContext> {
+        return when (item) {
+            is Track -> listOf(DownloadContext(extensionId, item))
+            else -> emptyList()
+        }
+    }
+
+    override suspend fun selectServer(context: DownloadContext): Streamable {
+        return context.track.servers.first()
+    }
+
+    override suspend fun selectSources(
+        context: DownloadContext,
+        server: Streamable.Media.Server
+    ): List<Streamable.Source> {
+        return server.sources
+    }
+
+    override suspend fun download(
+        progressFlow: MutableStateFlow<Progress>,
+        context: DownloadContext,
+        source: Streamable.Source
+    ): File {
+        val request = Request.Builder().url(source.id).build()
+        val response = client.newCall(request).await()
+        if (!response.isSuccessful) throw Exception("Download failed: ${response.code}")
+
+        val totalBytes = response.body?.contentLength() ?: -1L
+        val destination = File(this.context.cacheDir, "download_${System.currentTimeMillis()}")
+        
+        response.body?.byteStream()?.use { input ->
+            FileOutputStream(destination).use { output ->
+                val buffer = ByteArray(8192)
+                var bytesRead: Int
+                var totalRead = 0L
+                while (input.read(buffer).also { bytesRead = it } != -1) {
+                    output.write(buffer, 0, bytesRead)
+                    totalRead += bytesRead
+                    if (totalBytes > 0) {
+                        progressFlow.value = Progress(totalBytes, totalRead)
+                    }
+                }
+            }
+        }
+        return destination
+    }
+
+    override suspend fun merge(
+        progressFlow: MutableStateFlow<Progress>,
+        context: DownloadContext,
+        files: List<File>
+    ): File {
+        // Simple merge: if multiple files, just append (works for some formats like TS)
+        // But for most audio, it should be just one file.
+        if (files.size == 1) return files[0]
+        
+        val mergedFile = File(this.context.cacheDir, "merged_${System.currentTimeMillis()}")
+        FileOutputStream(mergedFile).use { output ->
+            files.forEach { file ->
+                file.inputStream().use { input ->
+                    input.copyTo(output)
+                }
+                file.delete()
+            }
+        }
+        return mergedFile
+    }
+
+    override suspend fun tag(
+        progressFlow: MutableStateFlow<Progress>,
+        context: DownloadContext,
+        file: File
+    ): File {
+        val track = context.track
+        val lyrics = try {
+            lrcLib.getLyrics(
+                title = track.title,
+                artist = track.artists.joinToString(", ") { it.name },
+                duration = track.duration?.div(1000)?.toInt()
+            )
+        } catch (e: Exception) {
+            null
+        }
+
+        TagInjector.writeMetadata(
+            file = file,
+            title = track.title,
+            artist = track.artists.joinToString(", ") { it.name },
+            album = track.album?.title,
+            coverUrl = (track.cover as? ImageHolder.NetworkRequestImageHolder)?.request?.url,
+            lyrics = lyrics
+        )
+        
+        // After tagging, move to public music folder
+        val publicDir = File(
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC),
+            "Music Hub"
+        )
+        if (!publicDir.exists()) publicDir.mkdirs()
+        
+        val extension = if (file.extension.isNotEmpty()) file.extension else "mp3"
+        val fileName = "${track.title} - ${track.artists.firstOrNull()?.name}.$extension"
+            .replace(Regex("[\\\\/:*?\"<>|]"), "_")
+            
+        val finalFile = File(publicDir, fileName)
+        file.renameTo(finalFile)
+        
+        return finalFile
+    }
+
+    override suspend fun onInitialize() {}
+    override suspend fun onExtensionSelected() {}
+    override suspend fun getSettingItems(): List<Setting> = emptyList()
+    override fun setSettings(settings: Settings) {}
+}
+
+
+---------- FILE: app\src\main\java\com\joaomagdaleno\music_hub\extensions\builtin\internal\InternalMusicSource.kt ----------
+package com.joaomagdaleno.music_hub.extensions.builtin.internal
+
+import com.joaomagdaleno.music_hub.BuildConfig
+import com.joaomagdaleno.music_hub.common.clients.AlbumClient
+import com.joaomagdaleno.music_hub.common.clients.ArtistClient
+import com.joaomagdaleno.music_hub.common.clients.ExtensionClient
+import com.joaomagdaleno.music_hub.common.clients.HomeFeedClient
+import com.joaomagdaleno.music_hub.common.clients.LibraryFeedClient
+import com.joaomagdaleno.music_hub.common.clients.LyricsClient
+import com.joaomagdaleno.music_hub.common.clients.SearchFeedClient
+import com.joaomagdaleno.music_hub.common.clients.TrackClient
+import com.joaomagdaleno.music_hub.common.models.*
+import com.joaomagdaleno.music_hub.common.models.Streamable.Media.Companion.toServerMedia
+import com.joaomagdaleno.music_hub.common.helpers.PagedData
+import com.joaomagdaleno.music_hub.common.settings.Setting
+import com.joaomagdaleno.music_hub.common.settings.SettingCategory
+import com.joaomagdaleno.music_hub.common.settings.SettingSwitch
+import com.joaomagdaleno.music_hub.common.settings.SettingTextInput
+import com.joaomagdaleno.music_hub.common.settings.Settings
+
+/**
+ * Built-in extension that provides internal music sources.
+ * This represents the "Fake Extension" pattern to transition to a built-in logic model.
+ */
+class InternalMusicSource : ExtensionClient, SearchFeedClient, TrackClient, AlbumClient, ArtistClient, HomeFeedClient, LibraryFeedClient, LyricsClient {
+
+    companion object {
+        const val INTERNAL_ID = "internal_source"
+        const val PREF_QUALITY = "pref_high_quality"
+        const val PREF_REGION = "pref_trending_region"
+        val metadata = Metadata(
+            className = "com.joaomagdaleno.music_hub.extensions.builtin.internal.InternalMusicSource",
+            path = "",
+            importType = ImportType.BuiltIn,
+            type = ExtensionType.MUSIC,
+            id = INTERNAL_ID,
+            name = "Music Hub Base",
+            version = "v${BuildConfig.VERSION_CODE}",
+            description = "Official built-in source for Music Hub",
+            author = "João Magdaleno",
+            isEnabled = true
+        )
+    }
+
+    private lateinit var settings: Settings
+
+    // --- ExtensionClient ---
+    override suspend fun onInitialize() {
+        // Initialization logic here
+    }
+
+    override suspend fun onExtensionSelected() {
+        // Selection logic here
+    }
+
+    // --- SettingsProvider ---
+    override suspend fun getSettingItems(): List<Setting> = listOf(
+        SettingCategory(
+            title = "Home Content",
+            key = "home_group",
+            items = listOf(
+                SettingTextInput(
+                    title = "Trending Region",
+                    key = PREF_REGION,
+                    summary = "Country code for YouTube trends (e.g. BR, US, PT)",
+                    defaultValue = "BR"
+                )
+            )
+        ),
+        SettingCategory(
+            title = "Audio Quality",
+            key = "audio_group",
+            items = listOf(
+                SettingSwitch(
+                    title = "Force High Quality (FLAC/320)",
+                    key = PREF_QUALITY,
+                    summary = "Prioritize lossless sources whenever available",
+                    defaultValue = true
+                )
+            )
+        )
+    )
+
+    override fun setSettings(settings: Settings) {
+        this.settings = settings
+    }
+
+    private val slavArt = SlavArtApi()
+    private val piped = PipedApi()
+    private val lrcLib = LrcLibApi()
+
+    // --- SearchFeedClient ---
+    override suspend fun loadSearchFeed(query: String): Feed<Shelf> {
+        // 1. Try SlavArt first (High Quality)
+        val slavArtResults = try {
+            slavArt.search(query)
+        } catch (e: Exception) {
+            emptyList()
+        }
+
+        if (slavArtResults.isNotEmpty()) {
+            val tracks = slavArtResults.map { result ->
+                Track(
+                    id = result.id,
+                    title = result.title,
+                    album = result.album?.let { Album(id = "slavart_album:${result.id}", title = it, artists = listOf()) },
+                    artists = listOf(Artist(id = "slavart_artist:${result.artist}", name = result.artist)),
+                    cover = result.thumbnail?.let { ImageHolder.NetworkRequestImageHolder(NetworkRequest(it), false) },
+                    isPlayable = Track.Playable.Yes,
+                    duration = result.duration?.toLong()?.times(1000), // ms
+                    extras = mapOf(
+                        "source_url" to result.url,
+                        "quality" to (result.quality ?: if (settings.getBoolean(PREF_QUALITY) != false) "FLAC" else "320kbps"),
+                        "source" to "slavart"
+                    )
+                )
+            }
+
+            val shelf = Shelf.Lists.Tracks(
+                id = "slavart_results",
+                title = "SlavArt Results",
+                list = tracks
+            )
+
+            return Feed(tabs = emptyList(), getPagedData = { Feed.Data(PagedData.Single { listOf(shelf) }) })
+        }
+
+        // 2. Try YouTube Cascade
+        val youtubeTracks = try {
+            youtubeCascadeSearch(query)
+        } catch (e: Exception) {
+            emptyList()
+        }
+
+        val shelfTitle = if (youtubeTracks.isNotEmpty()) "YouTube Results" else "No results found"
+        val shelf = Shelf.Lists.Tracks(
+            id = "youtube_results",
+            title = shelfTitle,
+            list = youtubeTracks
+        )
+
+        return Feed(tabs = emptyList(), getPagedData = { Feed.Data(PagedData.Single { listOf(shelf) }) })
+    }
+
+    private suspend fun youtubeCascadeSearch(query: String): List<Track> {
+        // Attempt search with different terms for better results
+        val searchTerms = listOf(query, "$query topic", "$query official audio")
+        val allResults = mutableListOf<PipedSearchResult>()
+        val seenIds = mutableSetOf<String>()
+
+        for (term in searchTerms) {
+            val results = piped.search(term)
+            for (res in results) {
+                val videoId = res.url.substringAfter("v=", "")
+                if (videoId.isNotBlank() && videoId !in seenIds) {
+                    // Filter: Ignore short clips (< 60s)
+                    if (res.duration != null && res.duration < 60) continue
+                    
+                    allResults.add(res)
+                    seenIds.add(videoId)
+                }
+            }
+            if (allResults.size >= 10) break
+        }
+
+        // Prioritization logic: Topic > Official > Others
+        val topicResults = allResults.filter { it.uploaderName?.endsWith(" - Topic") == true }
+        val officialResults = allResults.filter { it.title?.contains("Official", ignoreCase = true) == true && it !in topicResults }
+        val remainingResults = allResults.filter { it !in topicResults && it !in officialResults }
+
+        val finalResults = (topicResults + officialResults + remainingResults).take(15)
+
+        return finalResults.map { res ->
+            val videoId = res.url.substringAfter("v=", "")
+            Track(
+                id = videoId,
+                title = res.title ?: "Unknown",
+                artists = listOf(Artist(id = res.uploaderUrl?.substringAfterLast("/")?.let { "youtube_channel:$it" } ?: "unknown", name = res.uploaderName ?: "Unknown")),
+                cover = res.thumbnail?.let { ImageHolder.NetworkRequestImageHolder(NetworkRequest(it), false) },
+                duration = res.duration?.times(1000),
+                isPlayable = Track.Playable.Yes,
+                extras = mapOf(
+                    "video_id" to videoId,
+                    "source" to "youtube"
+                )
+            )
+        }
+    }
+
+    // --- TrackClient ---
+    override suspend fun loadTrack(track: Track, isDownload: Boolean): Track {
+        return track
+    }
+
+    override suspend fun loadStreamableMedia(streamable: Streamable, isDownload: Boolean): Streamable.Media {
+        val source = streamable.extras["source"] ?: "slavart"
+        
+        val url = if (source == "youtube") {
+            val videoId = streamable.extras["video_id"] ?: ""
+            piped.getStreamUrl(videoId) ?: ""
+        } else {
+            val trackUrl = streamable.extras["source_url"] ?: ""
+            if (trackUrl.contains(".slavart-api.")) {
+                trackUrl
+            } else {
+                slavArt.getDownloadUrl(trackUrl) ?: ""
+            }
+        }
+
+        return url.toServerMedia()
+    }
+
+    override suspend fun loadFeed(track: Track): Feed<Shelf>? = null
+
+    // --- AlbumClient ---
+    override suspend fun loadAlbum(album: Album): Album = album
+
+    override suspend fun loadTracks(album: Album): Feed<Track>? {
+        if (album.id.startsWith("slavart_album:")) {
+            val realId = album.id.removePrefix("slavart_album:")
+            val results = slavArt.getAlbumTracks(realId)
+            val tracks = results.map { result ->
+                Track(
+                    id = result.id,
+                    title = result.title,
+                    album = album,
+                    artists = listOf(Artist(id = "slavart_artist:${result.artist}", name = result.artist)),
+                    cover = result.thumbnail?.let { ImageHolder.NetworkRequestImageHolder(NetworkRequest(it), false) },
+                    isPlayable = Track.Playable.Yes,
+                    duration = result.duration?.toLong()?.times(1000),
+                    extras = mapOf(
+                        "source_url" to result.url,
+                        "quality" to (result.quality ?: "FLAC"),
+                        "source" to "slavart"
+                    )
+                )
+            }
+            return Feed(tabs = emptyList(), getPagedData = { Feed.Data(PagedData.Single { tracks }) })
+        } else if (album.id.startsWith("youtube_playlist:")) {
+            val realId = album.id.removePrefix("youtube_playlist:")
+            val results = piped.getPlaylistTracks(realId)
+            val tracks = results.map { res ->
+                val videoId = res.url.substringAfter("v=", "")
+                Track(
+                    id = videoId,
+                    title = res.title ?: "Unknown",
+                    artists = listOf(Artist(id = res.uploaderUrl?.substringAfterLast("/")?.let { "youtube_channel:$it" } ?: "unknown", name = res.uploaderName ?: "Unknown")),
+                    cover = res.thumbnail?.let { ImageHolder.NetworkRequestImageHolder(NetworkRequest(it), false) },
+                    duration = res.duration?.times(1000),
+                    isPlayable = Track.Playable.Yes,
+                    extras = mapOf(
+                        "video_id" to videoId,
+                        "source" to "youtube"
+                    )
+                )
+            }
+            return Feed(tabs = emptyList(), getPagedData = { Feed.Data(PagedData.Single { tracks }) })
+        }
+        return null
+    }
+
+    override suspend fun loadFeed(album: Album): Feed<Shelf>? = null
+
+    // --- ArtistClient ---
+    override suspend fun loadArtist(artist: Artist): Artist = artist
+
+    override suspend fun loadFeed(artist: Artist): Feed<Shelf> {
+        val shelves = mutableListOf<Shelf>()
+        
+        if (artist.id.startsWith("slavart_artist:")) {
+            val realId = artist.id.removePrefix("slavart_artist:")
+            val info = slavArt.getArtistInfo(realId)
+
+            if (info.topTracks.isNotEmpty()) {
+                val tracks = info.topTracks.map { result ->
+                    Track(
+                        id = result.id,
+                        title = result.title,
+                        album = result.album?.let { Album(id = "slavart_album:${result.id}", title = it, artists = listOf()) },
+                        artists = listOf(artist),
+                        cover = result.thumbnail?.let { ImageHolder.NetworkRequestImageHolder(NetworkRequest(it), false) },
+                        isPlayable = Track.Playable.Yes,
+                        duration = result.duration?.toLong()?.times(1000),
+                        extras = mapOf(
+                            "source_url" to result.url,
+                            "quality" to (result.quality ?: "FLAC"),
+                            "source" to "slavart"
+                        )
+                    )
+                }
+                shelves.add(Shelf.Lists.Tracks("popular_tracks", "Popular Tracks", tracks))
+            }
+
+            if (info.albums.isNotEmpty()) {
+                val albums = info.albums.map { result ->
+                    Album(
+                        id = "slavart_album:${result.id}",
+                        title = result.title ?: result.name ?: "Unknown",
+                        cover = result.cover?.let { ImageHolder.NetworkRequestImageHolder(NetworkRequest(it), false) },
+                        artists = listOf(artist)
+                    )
+                }
+                shelves.add(Shelf.Lists.Items("albums", "Albums", albums, type = Shelf.Lists.Type.Grid))
+            }
+        } else if (artist.id.startsWith("youtube_channel:")) {
+            val realId = artist.id.removePrefix("youtube_channel:")
+            val items = piped.getChannelItems(realId)
+            
+            val tracks = items.map { res ->
+                val videoId = res.url.substringAfter("v=", "")
+                Track(
+                    id = videoId,
+                    title = res.title ?: "Unknown",
+                    artists = listOf(Artist(id = res.uploaderUrl?.substringAfterLast("/")?.let { "youtube_channel:$it" } ?: "unknown", name = res.uploaderName ?: "Unknown")),
+                    cover = res.thumbnail?.let { ImageHolder.NetworkRequestImageHolder(NetworkRequest(it), false) },
+                    duration = res.duration?.times(1000),
+                    isPlayable = Track.Playable.Yes,
+                    extras = mapOf(
+                        "video_id" to videoId,
+                        "source" to "youtube"
+                    )
+                )
+            }
+            if (tracks.isNotEmpty()) {
+                shelves.add(Shelf.Lists.Tracks("latest_uploads", "Latest Uploads", tracks))
+            }
+        }
+
+        return Feed(tabs = emptyList(), getPagedData = { Feed.Data(PagedData.Single { shelves }) })
+    }
+
+    // --- HomeFeedClient ---
+    override suspend fun loadHomeFeed(): Feed<Shelf> = Feed(
+        listOf(
+            Tab("trending", "Trending"),
+            Tab("discovery", "Discovery")
+        )
+    ) { tab ->
+        val shelves = mutableListOf<Shelf>()
+        when (tab?.id) {
+            "trending" -> {
+                val region = settings.getString(PREF_REGION) ?: "BR"
+                val trending = try { piped.getTrending(region) } catch (e: Exception) { emptyList() }
+                if (trending.isNotEmpty()) {
+                    val tracks = trending.map { res ->
+                        val videoId = res.url.substringAfter("v=", "")
+                        Track(
+                            id = videoId,
+                            title = res.title ?: "Unknown",
+                            artists = listOf(Artist(id = res.uploaderUrl?.substringAfterLast("/")?.let { "youtube_channel:$it" } ?: "unknown", name = res.uploaderName ?: "Unknown")),
+                            cover = res.thumbnail?.let { ImageHolder.NetworkRequestImageHolder(NetworkRequest(it), false) },
+                            duration = res.duration?.times(1000),
+                            isPlayable = Track.Playable.Yes,
+                            extras = mapOf(
+                                "video_id" to videoId,
+                                "source" to "youtube"
+                            )
+                        )
+                    }
+                    shelves.add(Shelf.Lists.Tracks("trending_youtube", "Popular on YouTube", tracks, type = Shelf.Lists.Type.Grid))
+                }
+            }
+            "discovery" -> {
+                val results = try { slavArt.search("top 2024") } catch (e: Exception) { emptyList() }
+                if (results.isNotEmpty()) {
+                    val tracks = results.map { result ->
+                        Track(
+                            id = result.id,
+                            title = result.title,
+                            album = result.album?.let { Album(id = "slavart_album:${result.id}", title = it, artists = listOf()) },
+                            artists = listOf(Artist(id = "slavart_artist:${result.artist}", name = result.artist)),
+                            cover = result.thumbnail?.let { ImageHolder.NetworkRequestImageHolder(NetworkRequest(it), false) },
+                            isPlayable = Track.Playable.Yes,
+                            duration = result.duration?.toLong()?.times(1000),
+                            extras = mapOf(
+                                "source_url" to result.url,
+                                "quality" to (result.quality ?: "FLAC"),
+                                "source" to "slavart"
+                            )
+                        )
+                    }
+                    shelves.add(Shelf.Lists.Tracks("discovery_slavart", "High Quality Picks", tracks, type = Shelf.Lists.Type.Grid))
+                }
+            }
+        }
+        Feed.Data(PagedData.Single { shelves })
+    }
+
+    // --- LibraryFeedClient ---
+    override suspend fun loadLibraryFeed(): Feed<Shelf> = Feed(
+        tabs = emptyList(),
+        getPagedData = { Feed.Data(PagedData.Single { emptyList<Shelf>() }) }
+    )
+
+    // --- LyricsClient ---
+    override suspend fun searchTrackLyrics(clientId: String, track: Track): Feed<Lyrics> {
+        val title = track.title
+        val artist = track.artists.firstOrNull()?.name ?: "Unknown"
+        val duration = track.duration?.div(1000)?.toInt()
+
+        val rawLrc = lrcLib.getLyrics(title, artist, duration)
+        if (rawLrc == null) return Feed(tabs = emptyList(), getPagedData = { Feed.Data(PagedData.Single { emptyList<Lyrics>() }) })
+
+        val lyrics = Lyrics(
+            id = "lrclib:${track.id}",
+            title = title,
+            subtitle = artist,
+            lyrics = lrcLib.parseLrc(rawLrc)
+        )
+        return Feed(tabs = emptyList(), getPagedData = { Feed.Data(PagedData.Single { listOf(lyrics) }) })
+    }
+
+    override suspend fun loadLyrics(lyrics: Lyrics): Lyrics {
+        // Since we fetch the full LRC in searchTrackLyrics, nothing more to load
+        return lyrics
+    }
+}
+
+
+---------- FILE: app\src\main\java\com\joaomagdaleno\music_hub\extensions\builtin\internal\LrcLibApi.kt ----------
+package com.joaomagdaleno.music_hub.extensions.builtin.internal
+
+import com.joaomagdaleno.music_hub.common.helpers.ContinuationCallback.Companion.await
+import com.joaomagdaleno.music_hub.common.models.Lyrics
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+import okhttp3.OkHttpClient
+import okhttp3.Request
+
+@Serializable
+data class LrcEntry(
+    val id: Int,
+    val trackName: String? = null,
+    val artistName: String? = null,
+    val plainLyrics: String? = null,
+    val syncedLyrics: String? = null,
+    val duration: Double? = null
+)
+
+class LrcLibApi(private val client: OkHttpClient = OkHttpClient()) {
+    private val baseUrl = "https://lrclib.net/api"
+    private val json = Json { ignoreUnknownKeys = true }
+
+    suspend fun getLyrics(title: String, artist: String, duration: Int? = null): String? {
+        val url = "$baseUrl/get".toHttpUrlOrNull()?.newBuilder()
+            ?.addQueryParameter("artist_name", artist)
+            ?.addQueryParameter("track_name", title)
+            ?.apply { if (duration != null) addQueryParameter("duration", duration.toString()) }
+            ?.build() ?: return null
+
+        val request = Request.Builder().url(url).build()
+        val response = try { client.newCall(request).await() } catch (e: Exception) { null }
+
+        if (response != null && response.isSuccessful) {
+            val body = response.body?.string() ?: return null
+            val entry = json.decodeFromString<LrcEntry>(body)
+            return entry.syncedLyrics ?: entry.plainLyrics
+        }
+
+        // If exact match fails, try search
+        return searchLyrics(title, artist)
+    }
+
+    private suspend fun searchLyrics(title: String, artist: String): String? {
+        val query = "$artist $title"
+        val url = "$baseUrl/search".toHttpUrlOrNull()?.newBuilder()
+            ?.addQueryParameter("q", query)
+            ?.build() ?: return null
+
+        val request = Request.Builder().url(url).build()
+        val response = try { client.newCall(request).await() } catch (e: Exception) { null }
+
+        if (response != null && response.isSuccessful) {
+            val body = response.body?.string() ?: return null
+            val entries = json.decodeFromString<List<LrcEntry>>(body)
+            val best = entries.firstOrNull { !it.syncedLyrics.isNullOrBlank() } ?: entries.firstOrNull()
+            return best?.syncedLyrics ?: best?.plainLyrics
+        }
+        return null
+    }
+
+    fun parseLrc(lrc: String): Lyrics.Lyric {
+        val items = mutableListOf<Lyrics.Item>()
+        val lines = lrc.lines()
+        // Regex for [mm:ss.xx] or [mm:ss.xxx]
+        val pattern = Regex("\\[(\\d+):(\\d+)\\.(\\d+)\\](.*)")
+        
+        for (line in lines) {
+            val match = pattern.find(line)
+            if (match != null) {
+                val (min, sec, ms, text) = match.destructured
+                // ms part can be 2 or 3 digits. If 2 digits, it's centiseconds.
+                val milliseconds = when (ms.length) {
+                    2 -> ms.toLong() * 10
+                    else -> ms.toLong()
+                }
+                val startTime = (min.toLong() * 60 * 1000) + (sec.toLong() * 1000) + milliseconds
+                items.add(Lyrics.Item(text.trim(), startTime, 0L))
+            }
+        }
+        
+        if (items.isEmpty()) return Lyrics.Simple(lrc)
+
+        // Sort by start time just in case
+        items.sortBy { it.startTime }
+
+        // Set End Times
+        val finalItems = mutableListOf<Lyrics.Item>()
+        for (i in 0 until items.size - 1) {
+            finalItems.add(items[i].copy(endTime = items[i+1].startTime))
+        }
+        // Last line
+        if (items.isNotEmpty()) {
+            finalItems.add(items.last().copy(endTime = items.last().startTime + 10000L)) // 10s buffer
+        }
+
+        return Lyrics.Timed(finalItems)
+    }
+}
+
+
+---------- FILE: app\src\main\java\com\joaomagdaleno\music_hub\extensions\builtin\internal\PipedApi.kt ----------
+package com.joaomagdaleno.music_hub.extensions.builtin.internal
+
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import com.joaomagdaleno.music_hub.common.helpers.ContinuationCallback.Companion.await
+
+@Serializable
+data class PipedSearchResult(
+    val url: String,
+    val type: String? = null,
+    val title: String? = null,
+    val thumbnail: String? = null,
+    val uploaderName: String? = null,
+    val uploaderUrl: String? = null,
+    val duration: Long? = null,
+    val isShort: Boolean = false
+)
+
+@Serializable
+data class PipedStreamInfo(
+    val audioStreams: List<PipedAudioStream> = emptyList()
+)
+
+@Serializable
+data class PipedAudioStream(
+    val url: String,
+    val format: String,
+    val quality: String,
+    val bitrate: Int
+)
+
+class PipedApi(private val client: OkHttpClient = OkHttpClient()) {
+    private val baseUrl = "https://pipedapi.kavin.rocks"
+    private val json = Json { ignoreUnknownKeys = true }
+
+    suspend fun search(query: String): List<PipedSearchResult> {
+        val url = "$baseUrl/search".toHttpUrlOrNull()?.newBuilder()
+            ?.addQueryParameter("q", query)
+            ?.addQueryParameter("filter", "music_songs")
+            ?.build() ?: return emptyList()
+
+        val request = Request.Builder().url(url).build()
+        val response = client.newCall(request).await()
+
+        if (!response.isSuccessful) return emptyList()
+
+        val responseBody = response.body?.string() ?: return emptyList()
+        return try {
+            val data = json.parseToJsonElement(responseBody)
+            when (data) {
+                is JsonObject -> {
+                    val items = data["items"]?.jsonArray ?: return emptyList()
+                    items.mapNotNull { 
+                        try {
+                            json.decodeFromJsonElement(PipedSearchResult.serializer(), it)
+                        } catch (e: Exception) {
+                            null
+                        }
+                    }
+                }
+                else -> emptyList()
+            }
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
+    suspend fun getStreamUrl(videoId: String): String? {
+        val url = "$baseUrl/streams/$videoId".toHttpUrlOrNull() ?: return null
+
+        val request = Request.Builder().url(url).build()
+        val response = client.newCall(request).await()
+
+        if (!response.isSuccessful) return null
+
+        val responseBody = response.body?.string() ?: return null
+        return try {
+            val data = json.decodeFromString<PipedStreamInfo>(responseBody)
+            // Pick highest bitrate audio stream
+            data.audioStreams.maxByOrNull { it.bitrate }?.url
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    suspend fun getChannelItems(channelId: String): List<PipedSearchResult> {
+        val url = "$baseUrl/channels/$channelId".toHttpUrlOrNull() ?: return emptyList()
+        val request = Request.Builder().url(url).build()
+        val response = client.newCall(request).await()
+
+        if (!response.isSuccessful) return emptyList()
+
+        val responseBody = response.body?.string() ?: return emptyList()
+        return try {
+            val data = json.parseToJsonElement(responseBody).jsonObject
+            val items = data["relatedStreams"]?.jsonArray ?: return emptyList()
+            items.mapNotNull {
+                try {
+                    json.decodeFromJsonElement(PipedSearchResult.serializer(), it)
+                } catch (e: Exception) {
+                    null
+                }
+            }
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
+    suspend fun getPlaylistTracks(playlistId: String): List<PipedSearchResult> {
+        val url = "$baseUrl/playlists/$playlistId".toHttpUrlOrNull() ?: return emptyList()
+        val request = Request.Builder().url(url).build()
+        val response = client.newCall(request).await()
+
+        if (!response.isSuccessful) return emptyList()
+
+        val responseBody = response.body?.string() ?: return emptyList()
+        return try {
+            val data = json.parseToJsonElement(responseBody).jsonObject
+            val items = data["relatedStreams"]?.jsonArray ?: return emptyList()
+            items.mapNotNull {
+                try {
+                    json.decodeFromJsonElement(PipedSearchResult.serializer(), it)
+                } catch (e: Exception) {
+                    null
+                }
+            }
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
+    suspend fun getTrending(region: String = "BR"): List<PipedSearchResult> {
+        val url = "$baseUrl/trending".toHttpUrlOrNull()?.newBuilder()
+            ?.addQueryParameter("region", region)
+            ?.build() ?: return emptyList()
+        
+        val request = Request.Builder().url(url).build()
+        val response = client.newCall(request).await()
+
+        if (!response.isSuccessful) return emptyList()
+
+        val responseBody = response.body?.string() ?: return emptyList()
+        return try {
+            val items = json.parseToJsonElement(responseBody).jsonArray
+            items.mapNotNull {
+                try {
+                    json.decodeFromJsonElement(PipedSearchResult.serializer(), it)
+                } catch (e: Exception) {
+                    null
+                }
+            }
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+}
+
+
+---------- FILE: app\src\main\java\com\joaomagdaleno\music_hub\extensions\builtin\internal\SlavArtApi.kt ----------
+package com.joaomagdaleno.music_hub.extensions.builtin.internal
+
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.decodeFromJsonElement
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonArray
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import com.joaomagdaleno.music_hub.common.helpers.ContinuationCallback.Companion.await
+
+@Serializable
+data class SlavArtTrack(
+    val id: String,
+    val title: String? = null,
+    val name: String? = null,
+    val artist: JsonElement? = null,
+    val artists: JsonElement? = null,
+    val performer: JsonElement? = null,
+    val album: SlavArtAlbum? = null,
+    val cover: String? = null,
+    val image: String? = null,
+    val duration: Int? = null,
+    val url: String? = null,
+    val link: String? = null,
+    val maximum_bit_depth: Int? = null,
+    val maximum_sampling_rate: Double? = null,
+    val audioQuality: String? = null
+)
+
+@Serializable
+data class SlavArtAlbum(
+    val title: String? = null,
+    val name: String? = null,
+    val cover: String? = null
+)
+
+class SlavArtApi(private val client: OkHttpClient = OkHttpClient()) {
+    private val baseUrl = "https://slavart.gamesdrive.net"
+    private val downloadBaseUrl = "https://slavart-api.gamesdrive.net"
+    private val json = Json { ignoreUnknownKeys = true }
+
+    suspend fun search(query: String): List<SlavArtResult> {
+        val url = "$baseUrl/api/search".toHttpUrlOrNull()?.newBuilder()
+            ?.addQueryParameter("q", query)
+            ?.build() ?: return emptyList()
+
+        val request = Request.Builder().url(url).build()
+        val response = client.newCall(request).await()
+
+        if (!response.isSuccessful) return emptyList()
+
+        val responseBody = response.body?.string() ?: return emptyList()
+        val data = json.parseToJsonElement(responseBody).jsonObject
+
+        val results = mutableListOf<SlavArtResult>()
+
+        for (source in listOf("qobuz", "tidal", "deezer")) {
+            val sourceData = data[source] ?: continue
+            val items = when {
+                sourceData.jsonObject.containsKey("results") ->
+                    sourceData.jsonObject["results"]?.jsonArray
+                else -> null
+            } ?: continue
+
+            for (item in items) {
+                try {
+                    val track = json.decodeFromJsonElement<SlavArtTrack>(item)
+                    results.add(parseTrack(track, source))
+                } catch (e: Exception) {
+                    continue
+                }
+            }
+        }
+        return results
+    }
+
+    private fun parseTrack(track: SlavArtTrack, source: String): SlavArtResult {
+        return SlavArtResult(
+            id = track.id,
+            title = track.title ?: track.name ?: "Unknown",
+            artist = extractArtist(track),
+            album = track.album?.title ?: track.album?.name,
+            thumbnail = track.cover ?: track.album?.cover ?: track.image,
+            duration = track.duration,
+            source = source,
+            url = track.url ?: track.link ?: "",
+            quality = parseQuality(track, source)
+        )
+    }
+
+    private fun extractArtist(track: SlavArtTrack): String {
+        track.artist?.let { artist ->
+            if (artist is kotlinx.serialization.json.JsonObject) {
+                return artist["name"]?.toString()?.removeSurrounding("\"") ?: "Unknown"
+            }
+        }
+        track.artists?.let { artists ->
+            if (artists is kotlinx.serialization.json.JsonArray && artists.isNotEmpty()) {
+                val first = artists[0]
+                if (first is kotlinx.serialization.json.JsonObject) {
+                    return first["name"]?.toString()?.removeSurrounding("\"") ?: "Unknown"
+                } else if (first is kotlinx.serialization.json.JsonPrimitive) {
+                    return first.content
+                }
+            }
+        }
+        track.performer?.let { performer ->
+            if (performer is kotlinx.serialization.json.JsonObject) {
+                return performer["name"]?.toString()?.removeSurrounding("\"") ?: "Unknown"
+            }
+        }
+        return track.artist?.toString()?.removeSurrounding("\"") ?: "Unknown"
+    }
+
+    private fun parseQuality(track: SlavArtTrack, source: String): String? {
+        return when (source) {
+            "qobuz" -> {
+                if (track.maximum_bit_depth != null && track.maximum_sampling_rate != null) {
+                    "${track.maximum_bit_depth}-bit/${track.maximum_sampling_rate}kHz"
+                } else "FLAC"
+            }
+            "tidal" -> {
+                when (track.audioQuality) {
+                    "HI_RES" -> "MQA 24-bit"
+                    "LOSSLESS" -> "FLAC 16-bit"
+                    else -> track.audioQuality
+                }
+            }
+            "deezer" -> "FLAC 16-bit"
+            else -> null
+        }
+    }
+
+    suspend fun getDownloadUrl(trackUrl: String): String? {
+        val url = "$downloadBaseUrl/api/download".toHttpUrlOrNull()?.newBuilder()
+            ?.addQueryParameter("url", trackUrl)
+            ?.build() ?: return null
+
+        val request = Request.Builder().url(url).build()
+        val response = client.newCall(request).await()
+
+        if (!response.isSuccessful) return null
+
+        val responseBody = response.body?.string() ?: return null
+        val data = json.parseToJsonElement(responseBody).jsonObject
+        return data["download_url"]?.toString()?.removeSurrounding("\"")
+    }
+
+    suspend fun getAlbumTracks(albumId: String): List<SlavArtResult> {
+        val url = "$baseUrl/api/album/$albumId".toHttpUrlOrNull() ?: return emptyList()
+        val request = Request.Builder().url(url).build()
+        val response = client.newCall(request).await()
+
+        if (!response.isSuccessful) return emptyList()
+
+        val responseBody = response.body?.string() ?: return emptyList()
+        val data = json.parseToJsonElement(responseBody).jsonObject
+        val tracks = data["tracks"]?.jsonArray ?: return emptyList()
+
+        return tracks.mapNotNull {
+            try {
+                val track = json.decodeFromJsonElement<SlavArtTrack>(it)
+                parseTrack(track, "slavart")
+            } catch (e: Exception) {
+                null
+            }
+        }
+    }
+
+    suspend fun getArtistInfo(artistId: String): SlavArtArtistInfo {
+        val url = "$baseUrl/api/artist/$artistId".toHttpUrlOrNull() ?: return SlavArtArtistInfo(emptyList(), emptyList())
+        val request = Request.Builder().url(url).build()
+        val response = client.newCall(request).await()
+
+        if (!response.isSuccessful) return SlavArtArtistInfo(emptyList(), emptyList())
+
+        val responseBody = response.body?.string() ?: return SlavArtArtistInfo(emptyList(), emptyList())
+        val data = json.parseToJsonElement(responseBody).jsonObject
+
+        val topTracks = data["top_tracks"]?.jsonArray?.mapNotNull {
+            try {
+                val track = json.decodeFromJsonElement<SlavArtTrack>(it)
+                parseTrack(track, "slavart")
+            } catch (e: Exception) {
+                null
+            }
+        } ?: emptyList()
+
+        val albums = data["albums"]?.jsonArray?.mapNotNull {
+            try {
+                json.decodeFromJsonElement<SlavArtAlbumResult>(it)
+            } catch (e: Exception) {
+                null
+            }
+        } ?: emptyList()
+
+        return SlavArtArtistInfo(topTracks, albums)
+    }
+}
+
+@Serializable
+data class SlavArtAlbumResult(
+    val id: String,
+    val title: String? = null,
+    val name: String? = null,
+    val cover: String? = null,
+    val year: String? = null
+)
+
+data class SlavArtArtistInfo(
+    val topTracks: List<SlavArtResult>,
+    val albums: List<SlavArtAlbumResult>
+)
+
+data class SlavArtResult(
+    val id: String,
+    val title: String,
+    val artist: String,
+    val album: String?,
+    val thumbnail: String?,
+    val duration: Int?,
+    val source: String,
+    val url: String,
+    val quality: String?
+)
+
 
 ---------- FILE: app\src\main\java\com\joaomagdaleno\music_hub\extensions\builtin\offline\Convertors.kt ----------
 package com.joaomagdaleno.music_hub.extensions.builtin.offline
@@ -17249,10 +18416,11 @@ class HeaderAdapter(
         val holder = ViewHolder(parent)
         val binding = holder.binding
         val parentFragmentManager = fragment.parentFragmentManager
-        binding.extensionsCont.setOnClickListener {
-            ExtensionsListBottomSheet.newInstance(ExtensionType.MUSIC)
-                .show(parentFragmentManager, null)
-        }
+//        binding.extensionsCont.setOnClickListener {
+//            ExtensionsListBottomSheet.newInstance(ExtensionType.MUSIC)
+//                .show(parentFragmentManager, null)
+//        }
+        binding.extensionsCont.visibility = View.GONE
 
         binding.accountsCont.setOnClickListener {
             SettingsBottomSheet().show(parentFragmentManager, null)
@@ -17276,14 +18444,14 @@ class HeaderAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) = with(holder.binding) {
         super.onBindViewHolder(holder, position)
         val context = root.context
-        title.text = extension?.name ?: context.getString(R.string.app_name)
-        extensions.loadBigIcon(extension?.metadata?.icon, R.drawable.ic_extension_32dp)
-        extensionsCont.setLoopedLongClick(
-            viewModel.extensionLoader.music.value.filter { it.isEnabled },
-            { viewModel.extensionLoader.current.value }
-        ) {
-            viewModel.extensionLoader.setupMusicExtension(it, true)
-        }
+        title.text = context.getString(R.string.app_name)
+//        extensions.loadBigIcon(extension?.metadata?.icon, R.drawable.ic_extension_32dp)
+//        extensionsCont.setLoopedLongClick(
+//            viewModel.extensionLoader.music.value.filter { it.isEnabled },
+//            { viewModel.extensionLoader.current.value }
+//        ) {
+//            viewModel.extensionLoader.setupMusicExtension(it, true)
+//        }
 
         val (ext, isLoginClient, all) = triple
         accounts.loadBigIcon(
@@ -17417,8 +18585,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         val uiViewModel by activityViewModel<UiViewModel>()
         observe(uiViewModel.navigationReselected) {
             if (it != 0) return@observe
-            ExtensionsListBottomSheet.newInstance(ExtensionType.MUSIC)
-                .show(parentFragmentManager, null)
+            // Removed extension selection logic to keep a native feel
+            binding.recyclerView.smoothScrollToPosition(0)
         }
         observe(
             uiViewModel.navigation.combine(feedData.backgroundImageFlow) { a, b -> a to b }
@@ -24966,12 +26134,14 @@ class SettingsBottomSheet : BottomSheetDialogFragment(R.layout.dialog_settings) 
             requireActivity().openLink("https://github.com/brahmkshatriya")
         }
 
-        configureBottomBar(binding.extensionBar)
-        binding.extensionsCont.setOnClickListener {
-            dismiss()
-            ExtensionsListBottomSheet.newInstance(ExtensionType.MUSIC)
-                .show(parentFragmentManager, null)
-        }
+//        configureBottomBar(binding.extensionBar)
+//        binding.extensionsCont.setOnClickListener {
+//            dismiss()
+//            ExtensionsListBottomSheet.newInstance(ExtensionType.MUSIC)
+//                .show(parentFragmentManager, null)
+//        }
+        binding.extensionBar.isVisible = false // Hide the switcher bar
+        binding.extensionsCont.isVisible = false
 
         observe(viewModel.extensionLoader.current) { ext ->
             viewModel.currentExtension.value = ext
@@ -24982,13 +26152,13 @@ class SettingsBottomSheet : BottomSheetDialogFragment(R.layout.dialog_settings) 
                     null, ExtensionInfoFragment.getBundle(ext)
                 )
             }
-            binding.extensions.loadBigIcon(ext?.metadata?.icon, R.drawable.ic_extension_32dp)
-            binding.extensionsCont.setLoopedLongClick(
-                viewModel.extensionLoader.music.value.filter { it.isEnabled },
-                { viewModel.extensionLoader.current.value }
-            ) {
-                viewModel.extensionLoader.setupMusicExtension(it, true)
-            }
+//            binding.extensions.loadBigIcon(ext?.metadata?.icon, R.drawable.ic_extension_32dp)
+//            binding.extensionsCont.setLoopedLongClick(
+//                viewModel.extensionLoader.music.value.filter { it.isEnabled },
+//                { viewModel.extensionLoader.current.value }
+//            ) {
+//                viewModel.extensionLoader.setupMusicExtension(it, true)
+//            }
         }
 
         binding.currentAccountName.setOnClickListener {
@@ -26446,6 +27616,77 @@ object ShaUtils {
         return digest.digest().joinToString("") { "%02x".format(it) }
     }
 }
+
+---------- FILE: app\src\main\java\com\joaomagdaleno\music_hub\utils\TagInjector.kt ----------
+package com.joaomagdaleno.music_hub.utils
+
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import org.jaudiotagger.audio.AudioFileIO
+import org.jaudiotagger.tag.FieldKey
+import org.jaudiotagger.tag.TagOptionSingleton
+import org.jaudiotagger.tag.images.ArtworkFactory
+import java.io.File
+import java.io.FileOutputStream
+import com.joaomagdaleno.music_hub.common.helpers.ContinuationCallback.Companion.await
+
+object TagInjector {
+
+    private val client = OkHttpClient()
+
+    suspend fun writeMetadata(
+        file: File,
+        title: String,
+        artist: String,
+        album: String?,
+        coverUrl: String?,
+        lyrics: String? = null
+    ) {
+        try {
+            // Important for Android compatibility
+            TagOptionSingleton.getInstance().isAndroid = true
+
+            val audioFile = AudioFileIO.read(file)
+            val tag = audioFile.tagOrCreateAndSetDefault
+
+            tag.setField(FieldKey.TITLE, title)
+            tag.setField(FieldKey.ARTIST, artist)
+            album?.let { tag.setField(FieldKey.ALBUM, it) }
+            lyrics?.let { tag.setField(FieldKey.LYRICS, it) }
+
+            coverUrl?.let { url ->
+                val artworkFile = downloadImage(url)
+                if (artworkFile != null) {
+                    val artwork = ArtworkFactory.createArtworkFromFile(artworkFile)
+                    tag.deleteArtworkField()
+                    tag.setField(artwork)
+                    artworkFile.delete()
+                }
+            }
+
+            audioFile.commit()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private suspend fun downloadImage(url: String): File? {
+        return try {
+            val request = Request.Builder().url(url).build()
+            val response = client.newCall(request).await()
+            if (!response.isSuccessful) return null
+
+            val tempFile = File.createTempFile("cover", ".jpg")
+            val outputStream = FileOutputStream(tempFile)
+            response.body?.byteStream()?.copyTo(outputStream)
+            outputStream.close()
+            tempFile
+        } catch (e: Exception) {
+            null
+        }
+    }
+}
+
 
 ---------- FILE: app\src\main\java\com\joaomagdaleno\music_hub\utils\image\BlurTransformation.kt ----------
 @file:Suppress("DEPRECATION")
@@ -57272,6 +58513,6 @@ zipStorePath=wrapper/dists
 
 ================================================================================
 CONSOLIDATION COMPLETE
-FILES PROCESSED: 655
-DURATION: 0:00:11.862351
+FILES PROCESSED: 662
+DURATION: 0:00:12.557041
 ================================================================================
