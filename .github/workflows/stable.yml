@@ -54,17 +54,10 @@ jobs:
         with:
           path: app/build/outputs/apk/stable/app-stable.apk
 
-      - name: Record Build Metrics ⏱️
+      - name: Run Build Health Check 🏥
         run: |
-          mkdir -p metrics
-          APK_SIZE=$(stat -c%s "app/build/outputs/apk/stable/app-stable.apk")
-          echo "{
-            \"platform\": \"android\",
-            \"version\": \"${{ env.VERSION }}\",
-            \"apk_size_bytes\": $APK_SIZE,
-            \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",
-            \"commit\": \"${{ github.sha }}\"
-          }" > metrics/android_telemetry.json
+          chmod +x scripts/build_health.main.kts
+          kotlin scripts/build_health.main.kts "app/build/outputs/apk/stable/app-stable.apk" "${{ env.VERSION }}" "${{ github.sha }}"
 
       - name: Upload Telemetry
         uses: actions/upload-artifact@v4
@@ -72,9 +65,14 @@ jobs:
           name: android-telemetry
           path: metrics/android_telemetry.json
 
+      - name: Generate Changelog 📜
+        run: |
+          chmod +x scripts/generate_changelog.main.kts
+          kotlin scripts/generate_changelog.main.kts "${{ env.VERSION }}"
+
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
           make_latest: true
-          body: ${{ env.COMMIT }}
+          body_path: CHANGELOG_BODY.md
           files: app/build/${{ env.VERSION }}.apk

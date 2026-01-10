@@ -33,6 +33,25 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew assembleRelease
 
+      - name: Report APK Size 📊
+        run: |
+          APK_PATH="app/build/outputs/apk/release/app-release-unsigned.apk"
+          if [ -f "$APK_PATH" ]; then
+            APK_SIZE=$(stat -c%s "$APK_PATH")
+            APK_SIZE_MB=$(echo "scale=2; $APK_SIZE / 1024 / 1024" | bc)
+            echo "## 📊 Binary Size Report" >> $GITHUB_STEP_SUMMARY
+            echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
+            echo "| :--- | :--- |" >> $GITHUB_STEP_SUMMARY
+            echo "| **APK Size** | ${APK_SIZE_MB} MB |" >> $GITHUB_STEP_SUMMARY
+            echo "| **Raw Bytes** | ${APK_SIZE} |" >> $GITHUB_STEP_SUMMARY
+            # Warn if over budget
+            if [ "$APK_SIZE" -gt 104857600 ]; then
+              echo "| **Status** | ⚠️ Over 100MB Budget! |" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "| **Status** | ✅ Within Budget |" >> $GITHUB_STEP_SUMMARY
+            fi
+          fi
+
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:

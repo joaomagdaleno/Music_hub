@@ -51,17 +51,10 @@ jobs:
           -Pandroid.injected.signing.key.password=$PASSWORD
           cp app/build/outputs/apk/nightly/app-nightly.apk app/build/${{ env.VERSION }}.apk
 
-      - name: Record Build Metrics ⏱️
+      - name: Run Build Health Check 🏥
         run: |
-          mkdir -p metrics
-          APK_SIZE=$(stat -c%s "app/build/outputs/apk/nightly/app-nightly.apk")
-          echo "{
-            \"platform\": \"android\",
-            \"version\": \"$VERSION\",
-            \"apk_size_bytes\": $APK_SIZE,
-            \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",
-            \"commit\": \"${{ github.sha }}\"
-          }" > metrics/android_telemetry.json
+          chmod +x scripts/build_health.main.kts
+          kotlin scripts/build_health.main.kts "app/build/outputs/apk/nightly/app-nightly.apk" "$VERSION" "${{ github.sha }}"
 
       - name: Update Chronology 📜
         if: github.ref == 'refs/heads/main'

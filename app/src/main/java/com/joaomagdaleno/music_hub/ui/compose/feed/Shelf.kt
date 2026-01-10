@@ -34,6 +34,7 @@ import com.joaomagdaleno.music_hub.ui.compose.components.MediaItemCard
 import com.joaomagdaleno.music_hub.ui.compose.components.TrackItem
 import kotlin.math.abs
 
+@Composable
 fun ShelfRow(
     shelf: Shelf.Lists<out Any>,
     onItemClick: (EchoMediaItem) -> Unit
