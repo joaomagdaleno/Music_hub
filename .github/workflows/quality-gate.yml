@@ -69,6 +69,7 @@ jobs:
         with:
           scan-args: |-
             --recursive
+            --allow-no-lockfiles
             ./app
         continue-on-error: true
 

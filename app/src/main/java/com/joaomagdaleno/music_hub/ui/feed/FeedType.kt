@@ -18,7 +18,6 @@ sealed interface FeedType {
         Header, HorizontalList,
         Category, CategoryGrid,
         Media, MediaGrid,
-        Video, VideoHorizontal,
     }
 
     val feedId: String
@@ -76,18 +75,7 @@ sealed interface FeedType {
         override val extras: Map<String, String>? = item.extras
     }
 
-    @Serializable
-    data class Video(
-        override val feedId: String,
-        override val source: String,
-        override val context: EchoMediaItem?,
-        override val tabId: String?,
-        val item: Track,
-        override val type: Enum = Enum.Video,
-    ) : FeedType {
-        override val id = item.id
-        override val extras: Map<String, String>? = item.extras
-    }
+
 
     @Serializable
     data class MediaGrid(
@@ -134,13 +122,8 @@ sealed interface FeedType {
                 ) else listOf(Category(feedId, source, context, tabId, shelf))
 
                 is Shelf.Item -> when (val item = shelf.media) {
-                    is Track -> if (!noVideos) when (item.type) {
-                        Track.Type.Video -> listOf(Video(feedId, source, context, tabId, item))
-                        Track.Type.HorizontalVideo -> listOf(
-                            Video(feedId, source, context, tabId, item, Enum.VideoHorizontal)
-                        )
-
-                        else -> listOf(Media(feedId, source, context, tabId, item, null))
+                    is Track -> if (!noVideos) {
+                        listOf(Media(feedId, source, context, tabId, item, null))
                     } else {
                         val index = start + index
                         listOf(Media(feedId, source, context, tabId, item, index))

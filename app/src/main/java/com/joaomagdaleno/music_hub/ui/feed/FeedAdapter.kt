@@ -20,16 +20,12 @@ import com.joaomagdaleno.music_hub.ui.feed.FeedType.Enum.Header
 import com.joaomagdaleno.music_hub.ui.feed.FeedType.Enum.HorizontalList
 import com.joaomagdaleno.music_hub.ui.feed.FeedType.Enum.Media
 import com.joaomagdaleno.music_hub.ui.feed.FeedType.Enum.MediaGrid
-import com.joaomagdaleno.music_hub.ui.feed.FeedType.Enum.Video
-import com.joaomagdaleno.music_hub.ui.feed.FeedType.Enum.VideoHorizontal
 import com.joaomagdaleno.music_hub.ui.feed.viewholders.CategoryViewHolder
 import com.joaomagdaleno.music_hub.ui.feed.viewholders.FeedViewHolder
 import com.joaomagdaleno.music_hub.ui.feed.viewholders.HeaderViewHolder
 import com.joaomagdaleno.music_hub.ui.feed.viewholders.HorizontalListViewHolder
 import com.joaomagdaleno.music_hub.ui.feed.viewholders.MediaGridViewHolder
 import com.joaomagdaleno.music_hub.ui.feed.viewholders.MediaViewHolder
-import com.joaomagdaleno.music_hub.ui.feed.viewholders.VideoHorizontalViewHolder
-import com.joaomagdaleno.music_hub.ui.feed.viewholders.VideoViewHolder
 import com.joaomagdaleno.music_hub.ui.player.PlayerViewModel
 import com.joaomagdaleno.music_hub.utils.ContextUtils.observe
 import com.joaomagdaleno.music_hub.utils.ui.AnimationUtils.animatedWithAlpha
@@ -62,7 +58,6 @@ class FeedAdapter(
     private fun FeedType.toTrack(): Track? = when (this) {
         is FeedType.Media -> item as? Track
         is FeedType.MediaGrid -> item as? Track
-        is FeedType.Video -> item
         else -> null
     }
 
@@ -88,8 +83,6 @@ class FeedAdapter(
             CategoryGrid -> CategoryViewHolder(parent, listener)
             Media -> MediaViewHolder(parent, listener, ::getAllTracks)
             MediaGrid -> MediaGridViewHolder(parent, listener, ::getAllTracks)
-            Video -> VideoViewHolder(parent, listener, ::getAllTracks)
-            VideoHorizontal -> VideoHorizontalViewHolder(parent, listener, ::getAllTracks)
         }
     }
 
@@ -101,8 +94,6 @@ class FeedAdapter(
             is CategoryViewHolder -> holder.bind(feed as FeedType.Category)
             is MediaViewHolder -> holder.bind(feed as FeedType.Media)
             is MediaGridViewHolder -> holder.bind(feed as FeedType.MediaGrid)
-            is VideoViewHolder -> holder.bind(feed as FeedType.Video)
-            is VideoHorizontalViewHolder -> holder.bind(feed as FeedType.Video)
             is HorizontalListViewHolder -> {
                 holder.bind(feed as FeedType.HorizontalList)
                 viewModel.visibleScrollableViews[position] = WeakReference(holder)
@@ -146,7 +137,6 @@ class FeedAdapter(
         when (it) {
             is FeedType.Media -> listOfNotNull(it.item as? Track)
             is FeedType.MediaGrid -> listOfNotNull(it.item as? Track)
-            is FeedType.Video -> listOf(it.item)
             is FeedType.HorizontalList -> it.shelf.list.filterIsInstance<Track>()
             else -> null
         }
@@ -185,8 +175,8 @@ class FeedAdapter(
     override fun getSpanSize(position: Int, width: Int, count: Int) =
         when (FeedType.Enum.entries[getItemViewType(position)]) {
             Header, HorizontalList -> count
-            Category, Media, Video -> if (takeFullScreen) count else 2.coerceAtMost(count)
-            CategoryGrid, MediaGrid, VideoHorizontal -> 1
+            Category, Media -> if (takeFullScreen) count else 2.coerceAtMost(count)
+            CategoryGrid, MediaGrid -> 1
         }
 
     private fun clearState() {
