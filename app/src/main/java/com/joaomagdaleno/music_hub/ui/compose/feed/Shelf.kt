@@ -49,7 +49,7 @@ fun ShelfRow(
         if (shelf.type == Shelf.Lists.Type.Grid) {
             LazyHorizontalGrid(
                 rows = GridCells.Fixed(2),
-                contentPadding = PaddingValues(horizontal = 12.dp),
+                contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 12.dp),
                 modifier = Modifier.height(240.dp) 
             ) {
                 items(shelf.list) { item ->
@@ -62,7 +62,7 @@ fun ShelfRow(
         } else {
             LazyRow(
                 state = scrollState,
-                contentPadding = PaddingValues(horizontal = 12.dp)
+                contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 12.dp)
             ) {
                 if (shelf is Shelf.Lists.Tracks) {
                     val chunks = shelf.list.chunked(3)
@@ -139,7 +139,7 @@ fun CategoryShelf(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
         )
         LazyRow(
-            contentPadding = PaddingValues(horizontal = 12.dp)
+            contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 12.dp)
         ) {
             items(shelf.list) { category ->
                 CategoryCard(category = category, onClick = { onClick(category) })

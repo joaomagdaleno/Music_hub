@@ -266,6 +266,9 @@ class UiViewModel(
     }
 
     companion object {
+        const val BACKGROUND_GRADIENT = "bg_gradient"
+        const val NAVBAR_GRADIENT = "navbar_gradient"
+
         fun androidx.fragment.app.FragmentActivity.configureAppUpdater() {
             val viewModel by org.koin.androidx.viewmodel.ext.android.viewModel<UiViewModel>()
             var currentFile: File? = null
@@ -293,7 +296,7 @@ class UiViewModel(
             viewModel.checkForUpdates(this, false)
         }
 
-        const val BACKGROUND_GRADIENT = "bg_gradient"
+        }
         fun Fragment.applyGradient(view: View, drawable: Drawable?) {
             val settings = requireContext().getSettings()
             val isGradient = settings.getBoolean(BACKGROUND_GRADIENT, true)
@@ -416,7 +419,7 @@ class UiViewModel(
             }
         }
 
-        const val NAVBAR_GRADIENT = "navbar_gradient"
+        }
         fun MainActivity.setupNavBarAndInsets(
             uiViewModel: UiViewModel,
             root: View,

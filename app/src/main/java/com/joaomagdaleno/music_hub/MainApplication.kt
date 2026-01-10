@@ -19,7 +19,7 @@ import coil3.request.allowHardware
 import coil3.request.crossfade
 import com.joaomagdaleno.music_hub.di.App
 import com.joaomagdaleno.music_hub.di.DI
-import com.joaomagdaleno.music_hub.utils.AppShortcuts.configureAppShortcuts
+import com.joaomagdaleno.music_hub.utils.configureAppShortcuts
 import com.joaomagdaleno.music_hub.utils.CoroutineUtils
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
