@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.joaomagdaleno.music_hub.common.models.QuickSearchItem
 import com.joaomagdaleno.music_hub.di.App
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
@@ -26,13 +27,22 @@ class SearchViewModel(
         }
     }
 
+    private var lastSuggestionQuery = ""
     fun quickSearch(query: String) {
-        // Implement history or suggestion logic here
-        // For now, falling back to local history logic adapted without sources
-        val history = getHistory(app.context.getSharedPreferences("search", Context.MODE_PRIVATE))
-            .filter { it.contains(query, ignoreCase = true) }
-            .map { QuickSearchItem.Query(it, true) }
-        quickFeed.value = history
+        if (query == lastSuggestionQuery) return
+        lastSuggestionQuery = query
+        viewModelScope.launch {
+            if (query.isBlank()) {
+                val history = getHistory(app.context.getSharedPreferences("search", Context.MODE_PRIVATE))
+                    .map { QuickSearchItem.Query(it, true) }
+                quickFeed.value = history
+            } else {
+                delay(300) // Debounce
+                if (query != lastSuggestionQuery) return@launch
+                val suggestions = repository.getSearchSuggestions(query)
+                quickFeed.value = suggestions.map { QuickSearchItem.Query(it, false) }
+            }
+        }
     }
 
     fun deleteSearch(item: QuickSearchItem) {

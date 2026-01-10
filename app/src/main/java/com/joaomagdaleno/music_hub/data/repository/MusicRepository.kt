@@ -179,6 +179,16 @@ class MusicRepository(
             FileLogger.log("MusicRepository", "getHomeFeed: SlavArt Discovery failed: ${e.message}", e)
         }
 
+        // 3. Static Discovery Categories (Echo Style)
+        val categories = listOf(
+            Shelf.Category("cat_hits", "Global Hits", backgroundColor = "#FF5722"),
+            Shelf.Category("cat_chill", "Chill & Relax", backgroundColor = "#2196F3"),
+            Shelf.Category("cat_focus", "Focus & Work", backgroundColor = "#4CAF50"),
+            Shelf.Category("cat_workout", "Workout Boost", backgroundColor = "#E91E63"),
+            Shelf.Category("cat_party", "Party Vibes", backgroundColor = "#9C27B0")
+        )
+        shelves.add(Shelf.Lists.Categories("home_discovery", "Discover by Mood", categories))
+
         FileLogger.log("MusicRepository", "getHomeFeed complete, total shelves: ${shelves.size}")
         return shelves
     }
@@ -264,11 +274,11 @@ class MusicRepository(
     }
 
     suspend fun getAlbum(id: String): com.joaomagdaleno.music_hub.common.models.Album {
-        return com.joaomagdaleno.music_hub.common.models.Album(id = id, title = "")
+        return youtubeProvider.getAlbum(id) ?: com.joaomagdaleno.music_hub.common.models.Album(id = id, title = "Unknown")
     }
 
     suspend fun getArtist(id: String): com.joaomagdaleno.music_hub.common.models.Artist {
-        return com.joaomagdaleno.music_hub.common.models.Artist(id = id, name = "")
+        return youtubeProvider.getArtist(id) ?: com.joaomagdaleno.music_hub.common.models.Artist(id = id, name = "Unknown")
     }
 
     suspend fun getPlaylist(id: String): com.joaomagdaleno.music_hub.common.models.Playlist? {
@@ -333,5 +343,10 @@ class MusicRepository(
             }
             else -> emptyList()
         }
+    }
+
+    suspend fun getSearchSuggestions(query: String): List<String> {
+        if (query.isBlank()) return emptyList()
+        return piped.getSuggestions(query)
     }
 }

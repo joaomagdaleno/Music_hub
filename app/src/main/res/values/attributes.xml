@@ -6,4 +6,7 @@
     <attr name="navBarBackground" format="color" />
     <attr name="itemCoverSize" format="dimension" />
     <attr name="itemCorner" format="dimension" />
+    <attr name="navHomeColor" format="color" />
+    <attr name="navSearchColor" format="color" />
+    <attr name="navLibraryColor" format="color" />
 </resources>

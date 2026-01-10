@@ -86,14 +86,27 @@ abstract class MediaDetailsViewModel(
 
     abstract fun getItem(): Triple<String, EchoMediaItem, Boolean>?
 
-    // Actions stubbed for migration
-    fun likeItem(liked: Boolean) {}
-    fun hideItem(hidden: Boolean) {}
-    fun followItem(followed: Boolean) {}
-    fun saveToLibrary(saved: Boolean) {}
+    fun likeItem(liked: Boolean) = viewModelScope.launch {
+        val item = itemResultFlow.value?.getOrNull()?.item as? Track ?: return@launch
+        repository.toggleLike(item)
+        refresh()
+    }
 
-    fun onShare() = app.scope.launch(Dispatchers.IO) {
-        // Stubbed share logic
+    fun hideItem(hidden: Boolean) {}
+
+    fun followItem(followed: Boolean) = viewModelScope.launch {
+        // Implement artist follow if DB support exists
+    }
+
+    fun saveToLibrary(saved: Boolean) = viewModelScope.launch {
+        val item = itemResultFlow.value?.getOrNull()?.item ?: return@launch
+        repository.toggleSave(item)
+        refresh()
+    }
+
+    fun onShare() = viewModelScope.launch(Dispatchers.IO) {
+        val item = itemResultFlow.value?.getOrNull()?.item ?: return@launch
+        share(app, item)
     }
 
     val isRefreshing get() = itemResultFlow.value == null

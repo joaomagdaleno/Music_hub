@@ -9,14 +9,16 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      VERSION: $( echo ${{ github.event.head_commit.id }} | cut -c1-7 )
-      COMMIT: $( sed -E "s/(.*) <.*@.*>/\\1/g;t" <<< "${{ github.event.head_commit.message }}" | jq -Rsa . | tail -c +2 | head -c -2 )
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Setup Environment Variables
+        run: |
+          echo "VERSION=$( echo ${{ github.event.head_commit.id }} | cut -c1-7 )" >> $GITHUB_ENV
+          echo "COMMIT=$( sed -E "s/(.*) <.*@.*>/\\1/g;t" <<< "${{ github.event.head_commit.message }}" | jq -Rsa . | tail -c +2 | head -c -2 )" >> $GITHUB_ENV
 
       - name: Setup JDK 17
         uses: actions/setup-java@v4
@@ -55,7 +57,7 @@ jobs:
           APK_SIZE=$(stat -c%s "app/build/outputs/apk/nightly/app-nightly.apk")
           echo "{
             \"platform\": \"android\",
-            \"version\": \"${{ env.VERSION }}\",
+            \"version\": \"$VERSION\",
             \"apk_size_bytes\": $APK_SIZE,
             \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",
             \"commit\": \"${{ github.sha }}\"
@@ -67,7 +69,7 @@ jobs:
           # Simple script to append to a local history for the sake of the demo
           # In a real setup, we'd use a separate branch or external storage
           mkdir -p metrics_history
-          cp metrics/android_telemetry.json metrics_history/android_${{ env.VERSION }}.json
+          cp metrics/android_telemetry.json metrics_history/android_${VERSION}.json
           python scripts/generate_dashboard.py >> $GITHUB_STEP_SUMMARY
 
       - name: Upload Telemetry

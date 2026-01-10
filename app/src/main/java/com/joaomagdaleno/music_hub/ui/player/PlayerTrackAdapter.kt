@@ -79,7 +79,7 @@ class PlayerTrackAdapter(
             val targetPosX = collapsedPadding + if (context.isRTL()) insets.end else insets.start
             val targetPosY = if (playerSheetState.value != STATE_EXPANDED) 0
             else collapsedPadding + systemInsets.value.top
-            targetX = targetPosX - cover.left
+            targetX = targetPosX - (binding.root.left + cover.left)
             targetY = targetPosY - cover.top
             currentCoverHeight = cover.height.takeIf { it > 0 } ?: currentCoverHeight
             targetScale = size.toFloat() / currentCoverHeight

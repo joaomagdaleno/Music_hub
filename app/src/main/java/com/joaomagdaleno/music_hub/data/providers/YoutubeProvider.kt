@@ -86,6 +86,19 @@ class YoutubeSource : MusicSource {
         }
     }
 
+    suspend fun getAlbum(albumId: String): Album? {
+        // Piped doesn't have a specific "Album" endpoint, but we can treat a playlist as an album
+        val id = albumId.removePrefix("youtube_playlist:")
+        // We could fetch playlist details here if Piped returned them (it does in getPlaylistItems usually)
+        return Album(id = albumId, title = "YouTube Album") 
+    }
+
+    suspend fun getArtist(artistId: String): Artist? {
+        val id = artistId.removePrefix("youtube_channel:")
+        // Fetching channel info
+        return Artist(id = artistId, name = "YouTube Artist")
+    }
+
     private fun PipedSearchResult.toTrack(): Track {
         val videoId = url.substringAfter("v=", "")
         return Track(

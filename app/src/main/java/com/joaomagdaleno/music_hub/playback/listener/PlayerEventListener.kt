@@ -60,7 +60,7 @@ class PlayerEventListener(
     override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
         updateCurrentFlow()
         updateCustomLayout()
-        ResumptionUtils.saveIndex(context, player.currentMediaItemIndex)
+        scope.launch { ResumptionUtils.saveIndex(context, player.currentMediaItemIndex) }
     }
 
     override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
@@ -75,11 +75,11 @@ class PlayerEventListener(
 
     override fun onRepeatModeChanged(repeatMode: Int) {
         updateCustomLayout()
-        ResumptionUtils.saveRepeat(context, repeatMode)
+        scope.launch { ResumptionUtils.saveRepeat(context, repeatMode) }
     }
 
     override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
-        ResumptionUtils.saveShuffle(context, shuffleModeEnabled)
+        scope.launch { ResumptionUtils.saveShuffle(context, shuffleModeEnabled) }
     }
 
     override fun onPlaybackStateChanged(playbackState: Int) {
@@ -88,13 +88,13 @@ class PlayerEventListener(
 
     override fun onIsPlayingChanged(isPlaying: Boolean) {
         updateCurrentFlow()
-        ResumptionUtils.saveCurrentPos(context, player.currentPosition)
+        scope.launch { ResumptionUtils.saveCurrentPos(context, player.currentPosition) }
     }
 
     override fun onPositionDiscontinuity(
         oldPosition: Player.PositionInfo, newPosition: Player.PositionInfo, reason: Int
     ) {
-        ResumptionUtils.saveCurrentPos(context, player.currentPosition)
+        scope.launch { ResumptionUtils.saveCurrentPos(context, player.currentPosition) }
     }
 
     private val maxRetries = 3

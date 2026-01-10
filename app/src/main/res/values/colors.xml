@@ -9,4 +9,7 @@
     <color name="amoled_bg_semi">#54FFFFFF</color>
     <color name="amoled_fg">@color/black</color>
     <color name="amoled_fg_semi">#14000000</color>
+    <color name="home_color">#4F5B93</color>
+    <color name="search_color">#009688</color>
+    <color name="library_color">#FF8F00</color>
 </resources>

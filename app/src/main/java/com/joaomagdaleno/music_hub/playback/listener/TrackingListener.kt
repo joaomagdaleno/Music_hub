@@ -27,7 +27,10 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 
 @UnstableApi
+@UnstableApi
 class TrackingListener(
+    // We pass context for SharedPreferences access (ResumptionUtils)
+    private val context: android.content.Context,
     private val player: Player,
     private val scope: CoroutineScope,
     private val repository: MusicRepository,
@@ -64,6 +67,12 @@ class TrackingListener(
     private fun onTrackChanged(mediaItem: MediaItem?) {
         previousId = current?.origin
         current = mediaItem
+
+        // Save Queue and Index on track change
+        scope.launch {
+            ResumptionUtils.saveQueue(context, player)
+        }
+
         scope.launch {
             mutex.withLock {
                 timers.forEach { (_, timer) -> timer.pause() }
@@ -87,6 +96,11 @@ class TrackingListener(
     override fun onPositionDiscontinuity(
         oldPosition: Player.PositionInfo, newPosition: Player.PositionInfo, reason: Int
     ) {
+        // Save current position on discontinuity (seek, etc)
+        scope.launch {
+            ResumptionUtils.saveCurrentPos(context, newPosition.positionMs)
+        }
+
         scope.launch {
             val isPlaying = withContext(Dispatchers.Main) { player.isPlaying }
             playState.value = getDetails() to isPlaying

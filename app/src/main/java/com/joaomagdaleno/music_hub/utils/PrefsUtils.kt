@@ -1,6 +1,5 @@
 package com.joaomagdaleno.music_hub.utils
 
-
 import android.content.Context
 import android.net.Uri
 import androidx.core.content.edit
@@ -21,7 +20,6 @@ import kotlinx.serialization.json.longOrNull
 import java.io.BufferedReader
 import java.io.InputStreamReader
 
-
 private fun Map<String, Any?>.toJsonElementMap(): Map<String, JsonElement> {
     return this.mapValues { (_, value) ->
         when (value) {
@@ -36,7 +34,6 @@ private fun Map<String, Any?>.toJsonElementMap(): Map<String, JsonElement> {
         }
     }
 }
-
 
 fun Context.exportSettings(uri: Uri) {
     val settingsPrefs = getSharedPreferences(SETTINGS_NAME, Context.MODE_PRIVATE)
@@ -56,7 +53,6 @@ fun Context.exportSettings(uri: Uri) {
     }
 }
 
-
 fun Context.importSettings(uri: Uri) {
     val jsonString = contentResolver.openInputStream(uri)?.use { inputStream ->
         BufferedReader(InputStreamReader(inputStream)).readText()
@@ -67,26 +63,26 @@ fun Context.importSettings(uri: Uri) {
     allPrefsJson.forEach { (prefName, prefMap) ->
         getSharedPreferences(prefName, Context.MODE_PRIVATE).edit {
             prefMap.forEach { (key, value) ->
-                when (value) {
-                    is JsonPrimitive if value.booleanOrNull != null -> putBoolean(
+                when {
+                    value is JsonPrimitive && value.booleanOrNull != null -> putBoolean(
                         key,
                         value.booleanOrNull!!
                     )
 
-                    is JsonPrimitive if value.intOrNull != null -> putInt(key, value.intOrNull!!)
-                    is JsonPrimitive if value.longOrNull != null -> putLong(key, value.longOrNull!!)
-                    is JsonPrimitive if value.floatOrNull != null -> putFloat(
+                    value is JsonPrimitive && value.intOrNull != null -> putInt(key, value.intOrNull!!)
+                    value is JsonPrimitive && value.longOrNull != null -> putLong(key, value.longOrNull!!)
+                    value is JsonPrimitive && value.floatOrNull != null -> putFloat(
                         key,
                         value.floatOrNull!!
                     )
 
-                    is JsonPrimitive if value.isString -> putString(key, value.content)
-                    is JsonArray -> putStringSet(
+                    value is JsonPrimitive && value.isString -> putString(key, value.content)
+                    value is JsonArray -> putStringSet(
                         key,
                         value.mapNotNull { (it as? JsonPrimitive)?.contentOrNull }.toSet()
                     )
 
-                    is JsonNull -> remove(key)
+                    value is JsonNull -> remove(key)
                     else -> throw IllegalArgumentException("Unsupported type for deserialization: ${value::class.java}")
                 }
             }

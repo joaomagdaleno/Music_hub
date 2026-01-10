@@ -99,12 +99,16 @@ fun HomeFeed(
             FileLogger.log("HomeScreen", "Rendering LazyColumn with ${shelves.size} shelves")
             LazyColumn(modifier = Modifier.fillMaxSize()) {
                 items(shelves) { shelf ->
-                    if (shelf is Shelf.Lists<*> && shelf.list.isNotEmpty() && shelf.list.first() is EchoMediaItem) {
-                        @Suppress("UNCHECKED_CAST")
-                        ShelfRow(
-                            shelf = shelf as Shelf.Lists<EchoMediaItem>,
-                            onItemClick = onItemClick
-                        )
+                    when (shelf) {
+                        is Shelf.Lists<*> -> {
+                            if (shelf.list.isNotEmpty()) {
+                                ShelfRow(
+                                    shelf = shelf,
+                                    onItemClick = onItemClick
+                                )
+                            }
+                        }
+                        else -> {}
                     }
                 }
             }

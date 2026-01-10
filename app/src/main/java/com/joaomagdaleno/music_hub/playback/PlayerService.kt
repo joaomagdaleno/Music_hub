@@ -99,7 +99,7 @@ class PlayerService : MediaLibraryService() {
             )
         )
         player.addListener(
-            TrackingListener(player, scope, repository, state.current, app.throwFlow)
+            TrackingListener(this, player, scope, repository, state.current, app.throwFlow)
         )
         player.addListener(effects)
         app.settings.registerOnSharedPreferenceChangeListener(listener)
@@ -162,7 +162,7 @@ class PlayerService : MediaLibraryService() {
                     .buildUpon()
                     .setAudioOffloadPreferences(audioOffloadPreferences)
                     .build()
-                it.preloadConfiguration = ExoPlayer.PreloadConfiguration(C.TIME_UNSET)
+                it.preloadConfiguration = ExoPlayer.PreloadConfiguration(5000L) // Preload 5s before end
                 it.skipSilenceEnabled = app.settings.getBoolean(SKIP_SILENCE, true)
             }
     }

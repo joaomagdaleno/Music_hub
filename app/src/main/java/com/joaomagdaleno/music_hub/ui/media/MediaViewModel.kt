@@ -34,8 +34,9 @@ class MediaViewModel(
              // Simply load item logic using Repository
              val loadedItem = when(item) {
                  is com.joaomagdaleno.music_hub.common.models.Track -> repository.getTrack(item.id)
-                 // Others need implementing in Repository.
-                 // If not implemented, just return the item as is (if we can't fully load it yet).
+                 is com.joaomagdaleno.music_hub.common.models.Album -> repository.getAlbum(item.id)
+                 is com.joaomagdaleno.music_hub.common.models.Artist -> repository.getArtist(item.id)
+                 is com.joaomagdaleno.music_hub.common.models.Playlist -> repository.getPlaylist(item.id)
                  else -> item
              }
              

@@ -63,6 +63,7 @@ open class MainActivity : AppCompatActivity() {
             FileLogger.log("MainActivity", "Storage permission granted - refreshing home feed")
             feedViewModel.feedDataMap["home"]?.refresh()
         }
+        configureAppUpdater()
         
         supportFragmentManager.commit {
             if (savedInstanceState != null) return@commit

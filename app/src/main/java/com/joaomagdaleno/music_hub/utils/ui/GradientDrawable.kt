@@ -113,20 +113,28 @@ object GradientDrawable {
                     val withNoise = ComposeShader(
                         composed,
                         BitmapShader(noise, Shader.TileMode.REPEAT, Shader.TileMode.REPEAT),
-                        PorterDuff.Mode.DST_IN
+                        PorterDuff.Mode.DST_ATOP
+                    )
+                    val glossy = LinearGradient(
+                        0f, 0f, width.toFloat(), height.toFloat(),
+                        intArrayOf(Color.WHITE, Color.TRANSPARENT, Color.TRANSPARENT),
+                        floatArrayOf(0f, 0.45f, 1f),
+                        Shader.TileMode.CLAMP
+                    )
+                    val withGloss = ComposeShader(
+                        withNoise,
+                        glossy,
+                        PorterDuff.Mode.SCREEN
                     )
                     val backgroundShader = LinearGradient(
-                        0f,
-                        0f,
-                        0f,
-                        height.toFloat(),
+                        0f, 0f, 0f, height.toFloat(),
                         intArrayOf(background, background),
                         null,
                         Shader.TileMode.CLAMP
                     )
                     return ComposeShader(
                         backgroundShader,
-                        withNoise,
+                        withGloss,
                         PorterDuff.Mode.SRC_OVER
                     )
                 }

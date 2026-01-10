@@ -201,4 +201,19 @@ class PipedApi(
             }
         } ?: emptyList()
     }
+
+    suspend fun getSuggestions(query: String): List<String> {
+        FileLogger.log("PipedApi", "getSuggestions for '$query'")
+        return callWithFallback(
+            path = "suggestions",
+            queryParams = mapOf("query" to query)
+        ) { body ->
+            try {
+                val array = json.parseToJsonElement(body).jsonArray
+                array.map { it.jsonPrimitive.content }
+            } catch (e: Exception) {
+                null
+            }
+        } ?: emptyList()
+    }
 }
