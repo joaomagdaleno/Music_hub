@@ -59,5 +59,10 @@ class HomeFragment : Fragment() {
             if (curr != 0) return@observe
             uiViewModel.currentNavBackground.value = bg
         }
+        
+        // Listen for permission granted to refresh feed
+        requireActivity().supportFragmentManager.setFragmentResultListener("permissionGranted", this) { _, _ ->
+            feedData.refresh()
+        }
     }
 }

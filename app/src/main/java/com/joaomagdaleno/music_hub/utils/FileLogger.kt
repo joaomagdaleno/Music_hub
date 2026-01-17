@@ -16,34 +16,46 @@ object FileLogger {
     private var logFile: File? = null
 
     fun init(context: Context) {
-        try {
-            // Use public Documents folder for easy access
-            @Suppress("DEPRECATION")
-            val publicDocuments = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
-            
-            if (!publicDocuments.exists()) {
-                publicDocuments.mkdirs()
-            }
-            
-            logFile = File(publicDocuments, FILE_NAME)
-            
-            // Create file if it doesn't exist
-            if (!logFile!!.exists()) {
-                logFile!!.createNewFile()
-            }
-            
-            log("FileLogger", "Logger initialized. Path: ${logFile?.absolutePath}")
-        } catch (e: Exception) {
-            Log.e("FileLogger", "Failed to initialize logger: ${e.message}", e)
-            // Fallback to internal storage if public fails
+        // Try multiple locations in order of preference
+        val locations = listOf(
+            // 1. Public Download folder (most accessible)
+            { 
+                @Suppress("DEPRECATION")
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+            },
+            // 2. Public Documents folder
+            { 
+                @Suppress("DEPRECATION")
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
+            },
+            // 3. External files dir (app-specific but accessible via file manager)
+            { context.getExternalFilesDir(null) },
+            // 4. Internal storage (last resort)
+            { context.filesDir }
+        )
+
+        for (locationProvider in locations) {
             try {
-                logFile = File(context.filesDir, FILE_NAME)
-                if (!logFile!!.exists()) logFile!!.createNewFile()
-                log("FileLogger", "Logger fallback to internal: ${logFile?.absolutePath}")
-            } catch (e2: Exception) {
-                Log.e("FileLogger", "Fallback also failed", e2)
+                val dir = locationProvider() ?: continue
+                if (!dir.exists()) dir.mkdirs()
+                
+                val file = File(dir, FILE_NAME)
+                if (!file.exists()) file.createNewFile()
+                
+                // Test write
+                FileWriter(file, true).use { it.append("") }
+                
+                logFile = file
+                Log.d("FileLogger", "Logger initialized at: ${file.absolutePath}")
+                log("FileLogger", "=== App started ===")
+                log("FileLogger", "Log path: ${file.absolutePath}")
+                return
+            } catch (e: Exception) {
+                Log.w("FileLogger", "Failed to init at location: ${e.message}")
             }
         }
+        
+        Log.e("FileLogger", "All log locations failed!")
     }
 
     @Synchronized
@@ -74,3 +86,4 @@ object FileLogger {
         return logFile?.absolutePath ?: "Not initialized"
     }
 }
+

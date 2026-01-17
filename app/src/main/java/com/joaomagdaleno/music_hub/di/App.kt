@@ -64,16 +64,7 @@ data class App(
                 _networkFlow.value = NetworkConnection.NotConnected
             }
         }
-        // The provided snippet seems to be attempting to add an onCreate method to the Application class.
-        // Since this 'App' is a data class and not the Application class itself,
-        // and given the instruction to initialize FileLogger,
-        // the most faithful interpretation is to place the FileLogger initialization
-        // within this 'App' data class's init block, using its 'context' property.
-        // The 'startKoin' and 'super.onCreate()' calls are typical for an Application's onCreate,
-        // but cannot be directly applied here without changing the fundamental structure of 'App'.
-        // Therefore, only the FileLogger initialization is applied, using the 'context' property.
-        com.joaomagdaleno.music_hub.utils.FileLogger.init(context)
-        com.joaomagdaleno.music_hub.utils.FileLogger.log("App", "Application started")
+        // FileLogger is initialized in MainApplication
 
         connectivityManager.registerDefaultNetworkCallback(networkCallback)
     }

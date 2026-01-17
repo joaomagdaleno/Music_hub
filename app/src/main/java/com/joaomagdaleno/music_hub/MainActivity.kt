@@ -54,8 +54,11 @@ open class MainActivity : AppCompatActivity() {
         
         // Auto-refresh home feed when storage permission is granted
         PermsUtils.checkAppPermissions(this) {
-            FileLogger.log("MainActivity", "Storage permission granted - refreshing home feed")
-            feedViewModel.feedDataMap["home"]?.refresh()
+            FileLogger.log("MainActivity", "Storage permission granted - refreshing all feeds")
+            // Refresh all existing feed data
+            feedViewModel.feedDataMap.values.forEach { it.refresh() }
+            // Broadcast to fragments that may listen for this
+            supportFragmentManager.setFragmentResult("permissionGranted", Bundle.EMPTY)
         }
         UiViewModel.configureAppUpdater(this)
         

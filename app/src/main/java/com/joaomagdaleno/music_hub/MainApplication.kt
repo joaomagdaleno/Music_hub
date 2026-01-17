@@ -45,6 +45,13 @@ class MainApplication : Application(), KoinStartup, SingletonImageLoader.Factory
         
         // Initialize file-based logger FIRST
         com.joaomagdaleno.music_hub.utils.FileLogger.init(this)
+        
+        Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
+            com.joaomagdaleno.music_hub.utils.FileLogger.log("CRASH", "Uncaught exception in thread ${thread.name}", throwable)
+            // Optional: Re-throw or let the system handle it (which kills the app)
+            // defaultHandler?.uncaughtException(thread, throwable) 
+        }
+
         com.joaomagdaleno.music_hub.utils.FileLogger.log("MainApplication", "Application onCreate() started")
         
         CoroutineUtils.setDebug()

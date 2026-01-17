@@ -6,6 +6,7 @@ import com.joaomagdaleno.music_hub.download.Downloader
 import com.joaomagdaleno.music_hub.download.db.DownloadDatabase
 import com.joaomagdaleno.music_hub.playback.PlayerService
 import com.joaomagdaleno.music_hub.playback.PlayerState
+import com.joaomagdaleno.music_hub.ui.common.SnackBarHandler
 import com.joaomagdaleno.music_hub.ui.common.UiViewModel
 import com.joaomagdaleno.music_hub.ui.download.DownloadViewModel
 import com.joaomagdaleno.music_hub.ui.feed.FeedViewModel
@@ -57,6 +58,7 @@ object DI {
     }
 
     private val uiModules = module {
+        singleOf(::SnackBarHandler)
         viewModelOf(::UiViewModel)
 
         viewModelOf(::PlayerViewModel)
