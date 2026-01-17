@@ -10,10 +10,9 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.joaomagdaleno.music_hub.R
 import com.joaomagdaleno.music_hub.common.models.Playlist
 import com.joaomagdaleno.music_hub.databinding.ItemLoadingBinding
-import com.joaomagdaleno.music_hub.utils.ui.createSnack
+import com.joaomagdaleno.music_hub.utils.ui.UiUtils
 import com.joaomagdaleno.music_hub.utils.ContextUtils.observe
-import com.joaomagdaleno.music_hub.utils.Serializer.getSerialized
-import com.joaomagdaleno.music_hub.utils.Serializer.putSerialized
+import com.joaomagdaleno.music_hub.utils.Serializer
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
@@ -41,7 +40,7 @@ class DeletePlaylistBottomSheet : BottomSheetDialogFragment(R.layout.item_loadin
             return DeletePlaylistBottomSheet().apply {
                 arguments = Bundle().apply {
                     putString("origin", origin)
-                    putSerialized("item", item)
+                    Serializer.putSerialized(this, "item", item)
                     putBoolean("loaded", loaded)
                 }
             }
@@ -50,7 +49,7 @@ class DeletePlaylistBottomSheet : BottomSheetDialogFragment(R.layout.item_loadin
 
     val args by lazy { requireArguments() }
     val origin by lazy { args.getString("origin")!! }
-    val item by lazy { args.getSerialized<Playlist>("item")!!.getOrThrow() }
+    val item by lazy { Serializer.getSerialized<Playlist>(args, "item")!!.getOrThrow() }
     val loaded by lazy { args.getBoolean("loaded", false) }
 
     val vm by viewModel<DeletePlaylistViewModel> {
@@ -59,13 +58,13 @@ class DeletePlaylistBottomSheet : BottomSheetDialogFragment(R.layout.item_loadin
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val binding = ItemLoadingBinding.bind(view)
-        observe(vm.deleteStateFlow) { state ->
+                observe(this, vm.deleteStateFlow) { state ->
             val result = vm.playlistFlow.value
             val playlist = result?.getOrNull()
             val string = when (state) {
                 is DeleteState.Deleted -> {
                     if (state.result.isSuccess) {
-                        createSnack(getString(R.string.deleted_x, playlist?.title))
+                        UiUtils.createSnack(this, getString(R.string.deleted_x, playlist?.title))
                         parentFragmentManager.setFragmentResult(
                             "deleted", bundleOf("id" to playlist?.id)
                         )
@@ -80,6 +79,8 @@ class DeletePlaylistBottomSheet : BottomSheetDialogFragment(R.layout.item_loadin
 
                 DeleteState.Initial ->
                     getString(R.string.loading_x, playlist?.title)
+
+                else -> ""
             }
             binding.textView.text = string
         }

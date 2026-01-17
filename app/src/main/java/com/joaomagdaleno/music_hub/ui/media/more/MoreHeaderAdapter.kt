@@ -14,7 +14,7 @@ import com.joaomagdaleno.music_hub.playback.PlayerState
 import com.joaomagdaleno.music_hub.playback.PlayerState.Current.Companion.isPlaying
 import com.joaomagdaleno.music_hub.ui.common.GridAdapter
 import com.joaomagdaleno.music_hub.ui.feed.viewholders.MediaViewHolder.Companion.applyCover
-import com.joaomagdaleno.music_hub.ui.media.MediaHeaderAdapter.Companion.typeInt
+import com.joaomagdaleno.music_hub.ui.media.MediaHeaderAdapter
 import com.joaomagdaleno.music_hub.utils.ui.scrolling.ScrollAnimViewHolder
 
 class MoreHeaderAdapter(
@@ -60,7 +60,7 @@ class MoreHeaderAdapter(
             title.text = item.title
             type.text = when (item) {
                 is Artist -> ""
-                is EchoMediaItem.Lists -> root.context.getString(item.typeInt)
+                is EchoMediaItem.Lists -> root.context.getString(MediaHeaderAdapter.getTypeInt(item))
                 is Track -> root.context.getString(R.string.track)
             }
             coverContainer.run { applyCover(item, cover, listBg1, listBg2, icon) }
@@ -68,7 +68,7 @@ class MoreHeaderAdapter(
 
         fun onCurrentChanged(item: EchoMediaItem?, current: PlayerState.Current?) {
             binding.coverContainer.isPlaying.run {
-                val isPlaying = current.isPlaying(item?.id)
+                val isPlaying = current?.let { PlayerState.Current.isPlaying(it, item?.id) } == true
                 isVisible = isPlaying
                 (icon as Animatable).start()
             }

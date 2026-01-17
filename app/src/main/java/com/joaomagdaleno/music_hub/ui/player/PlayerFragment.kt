@@ -44,6 +44,7 @@ import com.joaomagdaleno.music_hub.databinding.FragmentPlayerBinding
 import com.joaomagdaleno.music_hub.playback.MediaItemUtils
 import com.joaomagdaleno.music_hub.ui.common.UiViewModel
 import com.joaomagdaleno.music_hub.ui.player.audiofx.AudioEffectsBottomSheet
+import com.joaomagdaleno.music_hub.ui.media.more.MediaMoreBottomSheet
 import com.joaomagdaleno.music_hub.ui.media.MediaFragment
 import com.joaomagdaleno.music_hub.ui.player.quality.FormatUtils
 import com.joaomagdaleno.music_hub.ui.player.quality.QualitySelectionBottomSheet
@@ -106,7 +107,7 @@ class PlayerFragment : Fragment() {
             binding, uiViewModel, viewModel, adapter, this, collapseHeight, requireActivity()
         )
         // Additional listeners kept in Fragment just in case, but moved logic to helper covers most
-        binding.bgPanel.setOnClickListener { adapterListener.onClick() }
+        // binding.bgPanel.setOnClickListener { adapterListener.onClick() }
     }
 
     private val adapterListener = object : PlayerTrackAdapter.Listener {

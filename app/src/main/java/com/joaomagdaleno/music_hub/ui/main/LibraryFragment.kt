@@ -37,11 +37,11 @@ class LibraryFragment : Fragment(R.layout.fragment_library) {
     }
 
     private val listener by lazy { FeedClickListener.getFeedListener(requireParentFragment()) }
-    private val feedAdapter by lazy { FeedAdapter.getFeedAdapter(feedData, listener) }
+    private val feedAdapter by lazy { FeedAdapter.getFeedAdapter(this, feedData, listener) }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val binding = FragmentLibraryBinding.bind(view)
-        AnimationUtils.setupTransition(view, false, MaterialSharedAxis.Y)
+        AnimationUtils.setupTransition(this, view, false, MaterialSharedAxis.Y)
         val headerAdapter = HeaderAdapter(this)
         val uiViewModel by activityViewModel<UiViewModel>()
         val context = requireContext()

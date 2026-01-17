@@ -7,9 +7,9 @@ import androidx.core.view.isVisible
 import com.joaomagdaleno.music_hub.common.models.QuickSearchItem
 import com.joaomagdaleno.music_hub.databinding.ItemQuickSearchMediaBinding
 import com.joaomagdaleno.music_hub.databinding.ItemQuickSearchQueryBinding
-import com.joaomagdaleno.music_hub.ui.feed.viewholders.MediaViewHolder.Companion.placeHolder
+import com.joaomagdaleno.music_hub.ui.feed.viewholders.MediaViewHolder.Companion.getPlaceHolder
 import com.joaomagdaleno.music_hub.ui.feed.viewholders.MediaViewHolder.Companion.subtitle
-import com.joaomagdaleno.music_hub.utils.image.ImageUtils.loadInto
+import com.joaomagdaleno.music_hub.utils.image.ImageUtils
 import com.joaomagdaleno.music_hub.utils.ui.scrolling.ScrollAnimViewHolder
 
 sealed class QuickSearchViewHolder(itemView: View) : ScrollAnimViewHolder(itemView) {
@@ -57,11 +57,11 @@ sealed class QuickSearchViewHolder(itemView: View) : ScrollAnimViewHolder(itemVi
         override fun bind(item:  QuickSearchAdapter.Item) {
             val item = item.actual as QuickSearchItem.Media
             binding.title.text = item.media.title
-            val subtitle = item.media.subtitle(binding.root.context)
-            binding.subtitle.text = subtitle
-            binding.subtitle.isVisible = !subtitle.isNullOrEmpty()
+            val subtitleText = subtitle(item.media, binding.root.context)
+            binding.subtitle.text = subtitleText
+            binding.subtitle.isVisible = !subtitleText.isNullOrEmpty()
             transitionView.transitionName = ("quick" + item.media.id).hashCode().toString()
-            item.media.cover.loadInto(binding.cover, item.media.placeHolder)
+            ImageUtils.loadInto(item.media.cover, binding.cover, getPlaceHolder(item.media))
         }
 
         companion object {

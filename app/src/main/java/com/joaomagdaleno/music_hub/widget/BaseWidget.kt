@@ -15,7 +15,7 @@ import androidx.media3.session.MediaController
 import com.joaomagdaleno.music_hub.R
 import com.joaomagdaleno.music_hub.di.App
 import com.joaomagdaleno.music_hub.common.models.MediaState
-import com.joaomagdaleno.music_hub.playback.MediaItemUtils.state
+import com.joaomagdaleno.music_hub.playback.MediaItemUtils
 import com.joaomagdaleno.music_hub.playback.PlayerCommands.likeCommand
 import com.joaomagdaleno.music_hub.playback.PlayerCommands.repeatCommand
 import com.joaomagdaleno.music_hub.playback.PlayerCommands.repeatOffCommand
@@ -64,7 +64,7 @@ abstract class BaseWidget : AppWidgetProvider(), KoinComponent {
             ACTION_PREVIOUS -> controller.seekToPrevious()
             ACTION_NEXT -> controller.seekToNext()
             ACTION_LIKE -> controller.sendCustomCommand(likeCommand, Bundle.EMPTY)
-            ACTION_UNLIKE -> controller.sendCustomCommand(unlikeCommand, Bundle.EMPTY)
+            ACTION_UNLIKE -> controller.sendCustomCommand(com.joaomagdaleno.music_hub.playback.PlayerCommands.unlikeCommand, Bundle.EMPTY)
             ACTION_REPEAT -> controller.sendCustomCommand(repeatCommand, Bundle.EMPTY)
             ACTION_REPEAT_OFF -> controller.sendCustomCommand(repeatOffCommand, Bundle.EMPTY)
             ACTION_REPEAT_ONE -> controller.sendCustomCommand(repeatOneCommand, Bundle.EMPTY)
@@ -137,7 +137,7 @@ abstract class BaseWidget : AppWidgetProvider(), KoinComponent {
             views: RemoteViews,
         ) {
             val current = controller?.currentMediaItem
-            val item = current?.state ?: run {
+            val item = current?.let { MediaItemUtils.getState(it) } ?: run {
                 val list = ResumptionUtils.recoverTracks(context).orEmpty()
                 val index = ResumptionUtils.recoverIndex(context) ?: 0
                 list.getOrNull(index)?.first

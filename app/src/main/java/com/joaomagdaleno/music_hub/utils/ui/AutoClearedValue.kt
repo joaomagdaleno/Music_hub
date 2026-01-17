@@ -26,6 +26,10 @@ class AutoClearedValue<T : Any>(val fragment: Fragment) : ReadWriteProperty<Frag
     class Nullable<T : Any>(val fragment: Fragment) : ReadWriteProperty<Fragment, T?> {
         private var _value: T? = null
 
+        init {
+            addOnDestroyObserver(fragment) { _value = null }
+        }
+
         override fun getValue(thisRef: Fragment, property: KProperty<*>) = _value
 
         override fun setValue(thisRef: Fragment, property: KProperty<*>, value: T?) {

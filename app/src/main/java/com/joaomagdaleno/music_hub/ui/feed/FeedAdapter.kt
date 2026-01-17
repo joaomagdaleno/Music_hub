@@ -126,7 +126,7 @@ class FeedAdapter(
             binding.textView.isVisible = false
         }
 
-        fun bind(loadState: LoadState) {
+        override fun bind(loadState: LoadState) {
             binding.root.alpha = 0f
             AnimationUtils.animatedWithAlpha(binding.root, 500)
         }
@@ -142,7 +142,7 @@ class FeedAdapter(
     }.flatten()
 
     fun withLoading(fragment: Fragment, vararg before: GridAdapter): GridAdapter.Concat {
-        val tabs = TabsAdapter<FeedTab>({ it.title }) { view, index, tab ->
+        val tabs = TabsAdapter<FeedTab>({ tab.title }) { view, index, tab ->
             listener.onTabSelected(view, tab.feedId, tab.origin, index)
         }
         ContextUtils.observe(fragment, viewModel.tabsFlow) { tabs.data = it }

@@ -38,7 +38,7 @@ class MainFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        AnimationUtils.setupTransition(view)
+        AnimationUtils.setupTransition(this, view)
         applyPlayerBg(this, view) {
             mainBgDrawable.combine(currentNavBackground) { a, b -> b ?: a }
         }

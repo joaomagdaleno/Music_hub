@@ -12,7 +12,6 @@ import com.joaomagdaleno.music_hub.playback.PlayerState.Current.Companion.isPlay
 import com.joaomagdaleno.music_hub.ui.feed.FeedClickListener
 import com.joaomagdaleno.music_hub.ui.feed.FeedType
 import com.joaomagdaleno.music_hub.ui.feed.viewholders.MediaViewHolder.Companion.applyCover
-import com.joaomagdaleno.music_hub.ui.feed.viewholders.MediaViewHolder.Companion.subtitle
 
 class MediaGridViewHolder(
     parent: ViewGroup,
@@ -55,7 +54,7 @@ class MediaGridViewHolder(
         val index = feed.number
         title.text = if (index == null) item.title
         else root.context.getString(R.string.n_dot_x, index + 1, item.title)
-        val subtitleText = item.subtitle(root.context)
+        val subtitleText = MediaViewHolder.subtitle(item, root.context)
         subtitle.text = subtitleText
         subtitle.isVisible = !subtitleText.isNullOrBlank()
         coverContainer.run { applyCover(item, cover, listBg1, listBg2, icon) }
@@ -63,7 +62,7 @@ class MediaGridViewHolder(
 
 
     override fun onCurrentChanged(current: PlayerState.Current?) {
-        val isPlaying = current.isPlaying(feed?.item?.id)
+        val isPlaying = current?.let { PlayerState.Current.isPlaying(it, feed?.item?.id) } == true
         binding.coverContainer.isPlaying.isVisible = isPlaying
         (binding.coverContainer.isPlaying.icon as Animatable).start()
     }

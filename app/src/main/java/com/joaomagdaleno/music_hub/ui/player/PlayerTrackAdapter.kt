@@ -17,8 +17,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDE
 import com.joaomagdaleno.music_hub.R
 import com.joaomagdaleno.music_hub.databinding.ItemClickPanelsBinding
 import com.joaomagdaleno.music_hub.databinding.ItemPlayerTrackBinding
-import com.joaomagdaleno.music_hub.playback.MediaItemUtils.track
-import com.joaomagdaleno.music_hub.playback.MediaItemUtils.unloadedCover
+import com.joaomagdaleno.music_hub.playback.MediaItemUtils
 import com.joaomagdaleno.music_hub.playback.PlayerState
 import com.joaomagdaleno.music_hub.ui.common.UiViewModel
 import com.joaomagdaleno.music_hub.utils.ui.UiUtils
@@ -59,7 +58,7 @@ class PlayerTrackAdapter(
 
         private val context = binding.root.context
 
-        private val collapsedPadding = 8.dpToPx(context)
+        private val collapsedPadding = UiUtils.dpToPx(context, 8)
         private val targetZ = collapsedPadding.toFloat()
         private val size = binding.root.resources.getDimension(R.dimen.collapsed_cover_size).toInt()
         private var targetScale = 0f
@@ -69,10 +68,10 @@ class PlayerTrackAdapter(
         private val cover = binding.playerTrackCoverContainer
         private var currentCoverHeight = size
         private var currCoverRound = 0f
-        private val isLandscape = context.isLandscape()
+        private val isLandscape = UiUtils.isLandscape(context)
         fun updateCollapsed() = uiViewModel.run {
             val insets = if (!isLandscape) systemInsets.value else getCombined()
-            val targetPosX = collapsedPadding + if (context.isRTL()) insets.end else insets.start
+            val targetPosX = collapsedPadding + if (UiUtils.isRTL(context)) insets.end else insets.start
             val targetPosY = if (playerSheetState.value != STATE_EXPANDED) 0
             else collapsedPadding + systemInsets.value.top
             targetX = targetPosX - (binding.root.left + cover.left)
@@ -80,9 +79,11 @@ class PlayerTrackAdapter(
             currentCoverHeight = cover.height.takeIf { it > 0 } ?: currentCoverHeight
             targetScale = size.toFloat() / currentCoverHeight
 
-            val (collapsedY, offset) = if (playerSheetState.value == STATE_EXPANDED)
-                systemInsets.value.top to if (isLandscape) 0f else moreSheetOffset.value
-            else -collapsedPadding to 1 - max(0f, playerSheetOffset.value)
+            val collapsedYAndOffset: Pair<Int, Float> = if (playerSheetState.value == STATE_EXPANDED)
+                Pair(systemInsets.value.top, if (isLandscape) 0f else moreSheetOffset.value)
+            else Pair(-collapsedPadding, 1 - max(0f, playerSheetOffset.value))
+            val collapsedY = collapsedYAndOffset.first
+            val offset = collapsedYAndOffset.second
 
             val inv = 1 - offset
             binding.playerCollapsed.root.run {
@@ -146,16 +147,17 @@ class PlayerTrackAdapter(
         }
 
         fun bind(item: MediaItem?) {
+            val track = item?.let { MediaItemUtils.getTrack(it) }
             binding.playerCollapsed.run {
-                collapsedTrackTitle.text = item?.track?.title
-                collapsedTrackArtist.text = item?.track?.artists?.joinToString(", ") { it.name }
+                collapsedTrackTitle.text = track?.title
+                collapsedTrackArtist.text = track?.artists?.joinToString(", ") { it.name }
             }
-            val old = ImageUtils.getCachedDrawable(item?.unloadedCover, binding.root.context)
-            ImageUtils.loadWithThumb(item?.track?.cover, binding.playerTrackCover, old) {
-                val image = it
-                    ?: ResourcesCompat.getDrawable(resources, R.drawable.art_music, context.theme)
-                binding.playerTrackCover.setImageDrawable(image)
-                coverDrawable = it
+            val old = ImageUtils.getCachedDrawable(item?.let { MediaItemUtils.getUnloadedCover(it) } ?: return, binding.root.context)
+            ImageUtils.loadWithThumb(track?.cover, binding.playerTrackCover, old) { imageView, drawable ->
+                val image = drawable
+                    ?: ResourcesCompat.getDrawable(binding.root.resources, R.drawable.art_music, context.theme)
+                imageView.setImageDrawable(image)
+                coverDrawable = drawable
                 applyDrawable()
             }
             updateInsets()

@@ -24,7 +24,7 @@ import com.joaomagdaleno.music_hub.common.helpers.PagedData
 import com.joaomagdaleno.music_hub.common.models.*
 import com.joaomagdaleno.music_hub.di.App
 import com.joaomagdaleno.music_hub.download.Downloader
-import com.joaomagdaleno.music_hub.playback.MediaItemUtils.track
+import com.joaomagdaleno.music_hub.playback.MediaItemUtils
 import com.joaomagdaleno.music_hub.playback.exceptions.PlayerException
 import com.joaomagdaleno.music_hub.playback.listener.PlayerRadio
 import com.joaomagdaleno.music_hub.utils.CoroutineUtils
@@ -94,7 +94,7 @@ class PlayerCallback(
         val item = withPlayer(player) { currentMediaItem }
             ?: ResumptionUtils.recoverPlaylist(context, app, downloadFlow.value, false).run { first.getOrNull(second) }
             ?: return@future SessionResult(SessionError.ERROR_UNKNOWN)
-        val image = toScaledBitmap(ImageUtils.loadDrawable(item.track.cover, context) ?: return@future SessionResult(SessionError.ERROR_UNKNOWN), 720)
+        val image = toScaledBitmap(ImageUtils.loadDrawable(MediaItemUtils.getTrack(item).cover, context) ?: return@future SessionResult(SessionError.ERROR_UNKNOWN), 720)
         SessionResult(RESULT_SUCCESS, Bundle().apply { putParcelable("image", image) })
     }
 
@@ -276,7 +276,7 @@ class PlayerCallback(
         else CoroutineUtils.future(scope) {
             val item = withPlayer(session.player) { currentMediaItem }
                 ?: return@future SessionResult(SessionError.ERROR_UNKNOWN)
-            val track = item.track
+            val track = MediaItemUtils.getTrack(item)
 
             val liked = rating.isThumbsUp
             if (liked != repository.isLiked(track)) {

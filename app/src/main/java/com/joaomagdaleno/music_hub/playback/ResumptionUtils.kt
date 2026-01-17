@@ -38,9 +38,9 @@ object ResumptionUtils {
         if (list.isEmpty()) return@withContext
         val currentIndex = player.currentMediaItemIndex
         withContext(Dispatchers.IO) {
-            val origins = list.map { it.origin }
-            val tracks = list.map { it.track }
-            val contexts = list.map { it.context }
+            val origins = list.map { MediaItemUtils.getOrigin(it) }
+            val tracks = list.map { MediaItemUtils.getTrack(it) }
+            val contexts = list.map { MediaItemUtils.getContext(it) }
             CacheUtils.saveToCache(context, INDEX, currentIndex, FOLDER)
             CacheUtils.saveToCache(context, ORIGINS, origins, FOLDER)
             CacheUtils.saveToCache(context, TRACKS, tracks, FOLDER)

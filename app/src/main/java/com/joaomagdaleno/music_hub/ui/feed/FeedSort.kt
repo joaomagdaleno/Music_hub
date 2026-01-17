@@ -146,7 +146,7 @@ enum class FeedSort(
     Tracks(R.string.tracks, { list ->
         list.sortedBy { FeedSortUtils.getTrackCount(it) }
             .filter { FeedSortUtils.getTrackCount(it) != null }
-            .map { FeedSortUtils.copyShelf(it, MediaHeaderAdapter.toTrackString(FeedSortUtils.ifListItem(it), this) ?: "???") }
+            .map { FeedSortUtils.copyShelf(it, MediaHeaderAdapter.toTrackString(FeedSortUtils.ifListItem(it)!!, this) ?: "???") }
     })
     ;
 

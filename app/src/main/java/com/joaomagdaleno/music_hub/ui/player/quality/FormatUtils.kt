@@ -63,7 +63,7 @@ object FormatUtils {
     ): List<String> {
         val groups = tracks.groups
         val audios = groups.filter { it.type == C.TRACK_TYPE_AUDIO }
-        val videos = groups.filter { it.type == C.TRACK_TYPE_VIDEO }
+        // val videos = groups.filter { it.type == C.TRACK_TYPE_VIDEO }
         val subtitles = groups.filter { it.type == C.TRACK_TYPE_TEXT }
         val sourceTitle = server?.run {
             if (merged) streams.mapNotNull { it.title }
@@ -71,7 +71,7 @@ object FormatUtils {
         }.orEmpty()
         return sourceTitle + listOfNotNull(
             getSelectedFormat(audios)?.let { toAudioDetails(it) },
-            getSelectedFormat(videos)?.let { toVideoDetails(it) },
+            // getSelectedFormat(videos)?.let { toVideoDetails(it) },
             getSelectedFormat(subtitles)?.let { toSubtitleDetails(it) }
         ).ifEmpty { listOf(context.getString(R.string.unknown_quality)) }
     }

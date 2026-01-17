@@ -23,12 +23,7 @@ import com.joaomagdaleno.music_hub.common.models.Streamable
 import com.joaomagdaleno.music_hub.di.App
 import com.joaomagdaleno.music_hub.download.Downloader
 import com.joaomagdaleno.music_hub.playback.MediaItemUtils
-import com.joaomagdaleno.music_hub.playback.MediaItemUtils.backgroundIndex
-import com.joaomagdaleno.music_hub.playback.MediaItemUtils.origin
-import com.joaomagdaleno.music_hub.playback.MediaItemUtils.retries
-import com.joaomagdaleno.music_hub.playback.MediaItemUtils.serverIndex
-import com.joaomagdaleno.music_hub.playback.MediaItemUtils.streamIndex
-import com.joaomagdaleno.music_hub.playback.MediaItemUtils.subtitleIndex
+// Imports removed
 import com.joaomagdaleno.music_hub.playback.PlayerService.Companion.select
 import com.joaomagdaleno.music_hub.playback.PlayerState
 import kotlinx.coroutines.CoroutineScope
@@ -83,9 +78,9 @@ class StreamableMediaSource(
                             getFactory(stream).create(new, index, stream)
                         }.toTypedArray()
                     ) else {
-                        val index = mediaItem.streamIndex
+                        val index = MediaItemUtils.getStreamIndex(mediaItem)
                         val stream = streams.getOrNull(index)
-                            ?: select(app, new.origin, streams) { it.quality }
+                            ?: select(app, MediaItemUtils.getOrigin(new), streams) { it.quality }
                         val newIndex = streams.indexOf(stream)
                         new = MediaItemUtils.buildStream(new, newIndex)
                         getFactory(stream!!).create(new, newIndex, stream)
@@ -120,13 +115,12 @@ class StreamableMediaSource(
         actualSource.releasePeriod(mediaPeriod)
 
     override fun canUpdateMediaItem(mediaItem: MediaItem) = run {
-        this.mediaItem.apply {
-            if (retries != mediaItem.retries) return@run false
-            if (serverIndex != mediaItem.serverIndex) return@run false
-            if (this.streamIndex != mediaItem.streamIndex) return@run false
-            if (backgroundIndex != mediaItem.backgroundIndex) return@run false
-            if (subtitleIndex != mediaItem.subtitleIndex) return@run false
-        }
+        if (MediaItemUtils.getRetries(this.mediaItem) != MediaItemUtils.getRetries(mediaItem)) return@run false
+        if (MediaItemUtils.getServerIndex(this.mediaItem) != MediaItemUtils.getServerIndex(mediaItem)) return@run false
+        if (MediaItemUtils.getStreamIndex(this.mediaItem) != MediaItemUtils.getStreamIndex(mediaItem)) return@run false
+        if (MediaItemUtils.getBackgroundIndex(this.mediaItem) != MediaItemUtils.getBackgroundIndex(mediaItem)) return@run false
+        if (MediaItemUtils.getSubtitleIndex(this.mediaItem) != MediaItemUtils.getSubtitleIndex(mediaItem)) return@run false
+        
         if (::actualSource.isInitialized) actualSource.canUpdateMediaItem(mediaItem)
         else false
     }

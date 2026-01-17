@@ -6,8 +6,7 @@ import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.joaomagdaleno.music_hub.R
-import com.joaomagdaleno.music_hub.utils.ui.UiUtils.dpToPx
-import com.joaomagdaleno.music_hub.utils.ui.UiUtils.resolveStyledDimension
+import com.joaomagdaleno.music_hub.utils.ui.UiUtils
 import kotlin.math.floor
 
 interface GridAdapter {
@@ -37,9 +36,9 @@ interface GridAdapter {
             val context = recycler.context
             val layoutManager = GridLayoutManager(context, 1)
             recycler.doOnLayout {
-                val itemWidth = context.resolveStyledDimension(R.attr.itemCoverSize)
+                val itemWidth = UiUtils.resolveStyledDimension(context, R.attr.itemCoverSize)
                 val width = it.width - it.paddingLeft - it.paddingRight
-                val calc = floor(width.toFloat() / (itemWidth + 8.dpToPx(context))).toInt()
+                val calc = floor(width.toFloat() / (itemWidth + UiUtils.dpToPx(context, 8))).toInt()
                 val count = if (calc > 1) calc - if (even) calc % 2 else 0 else 1
                 layoutManager.spanCount = count
                 layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {

@@ -64,15 +64,18 @@ class LyricsItemAdapter(
         val tabs = TabsAdapter<Tab>({ title }) { view, index, tab ->
             viewModel.selectedTabIndexFlow.value = index
         }
-        fragment.observe(viewModel.tabsFlow) { tabs.data = it }
-        fragment.observe(viewModel.selectedTabIndexFlow) { tabs.selected = it }
-        val loadStateListener = fragment.createListener { retry() }
+        observe(fragment, viewModel.tabsFlow) { tabs.data = it }
+        observe(fragment, viewModel.selectedTabIndexFlow) { tabs.selected = it }
+        val loadStateListener = createListener(fragment) { retry() }
         val header = FeedLoadingAdapter(loadStateListener) { LoadingViewHolder(it) }
         val footer = FeedLoadingAdapter(loadStateListener) { LoadingViewHolder(it) }
         val empty = EmptyAdapter()
-        fragment.observe(
+        observe(
+            fragment,
             loadStateFlow.combine(viewModel.shouldShowEmpty) { a, b -> a to b }
-        ) { (loadStates, shouldShowEmpty) ->
+        ) { pair ->
+            val loadStates = pair.first
+            val shouldShowEmpty = pair.second
             val isEmpty =
                 shouldShowEmpty && itemCount == 0 && loadStates.append is LoadState.NotLoading
             empty.loadState = if (isEmpty) LoadState.Loading else LoadState.NotLoading(false)

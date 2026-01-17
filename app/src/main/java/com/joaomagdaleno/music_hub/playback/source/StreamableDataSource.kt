@@ -9,7 +9,7 @@ import androidx.media3.datasource.DataSpec
 import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.datasource.DefaultHttpDataSource
 import com.joaomagdaleno.music_hub.common.models.Streamable
-import com.joaomagdaleno.music_hub.playback.source.StreamableResolver.Companion.copy
+// Import removed
 
 @UnstableApi
 class StreamableDataSource(
@@ -51,12 +51,12 @@ class StreamableDataSource(
             null -> defaultDataSourceFactory to dataSpec
             else -> when (val streamable = result.getOrThrow() as Streamable.Stream) {
                 is Streamable.Stream.Raw -> rawDataSourceFactory to
-                        dataSpec.copy(uri = streamable.uri, customData = streamable)
+                        StreamableResolver.copy(dataSpec, uri = streamable.uri, customData = streamable)
 
                 is Streamable.Stream.Http -> {
                     val spec = streamable.request.run {
                         defaultHttpDataSourceFactory.value.setDefaultRequestProperties(headers)
-                        dataSpec.copy(uri = url.toUri(), httpRequestHeaders = headers)
+                        StreamableResolver.copy(dataSpec, uri = url.toUri(), httpRequestHeaders = headers)
                     }
                     defaultDataSourceFactory to spec
                 }

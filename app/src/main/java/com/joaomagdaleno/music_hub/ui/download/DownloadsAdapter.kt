@@ -67,7 +67,7 @@ class DownloadsAdapter(
                 subtitle.text = sub
                 subtitle.isVisible = !sub.isNullOrEmpty()
 
-                exception.text = entity.exception?.let { UiUtils.getFinalExceptionTitle(root.context, it) }
+                exception.text = entity.exception?.title
                 exception.isVisible = exception.text.isNotEmpty()
 
                 remove.setOnClickListener {

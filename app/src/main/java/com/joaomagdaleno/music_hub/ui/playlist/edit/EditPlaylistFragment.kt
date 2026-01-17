@@ -125,7 +125,7 @@ class EditPlaylistFragment : Fragment() {
             binding.recyclerView.isVisible = !loading
             binding.fabContainer.isVisible = !loading
             binding.loading.root.isVisible = loading
-            binding.loading.textView.text = EditPlaylistBottomSheet.toText(save, playlist, requireContext())
+            binding.loading.textView.text = EditPlaylistBottomSheet.getSaveStateText(requireContext(), playlist, save)
 
             val saveRes = save as? EditPlaylistViewModel.SaveState.Saved ?: return@observe
             if (saveRes.result.isSuccess) parentFragmentManager.setFragmentResult(

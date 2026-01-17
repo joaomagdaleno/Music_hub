@@ -63,5 +63,9 @@ data class Feed<T : Any>(
         fun <T : Any> getPagedData(feed: Feed<T>, tab: Tab?): suspend () -> Data<T> {
             return { feed.getPagedData(tab) }
         }
+
+        fun <T : Any> List<T>.toFeed(
+            buttons: Buttons? = null, background: ImageHolder? = null
+        ) = toFeedFromList(this, buttons, background)
     }
 }

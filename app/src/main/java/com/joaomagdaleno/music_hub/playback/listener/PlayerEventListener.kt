@@ -9,15 +9,14 @@ import androidx.media3.common.Timeline
 import androidx.media3.session.MediaSession
 import com.joaomagdaleno.music_hub.data.repository.MusicRepository
 import com.joaomagdaleno.music_hub.playback.MediaItemUtils
-import com.joaomagdaleno.music_hub.playback.MediaItemUtils.origin
-import com.joaomagdaleno.music_hub.playback.MediaItemUtils.isLoaded
-import com.joaomagdaleno.music_hub.playback.MediaItemUtils.retries
+// Imports removed
 import com.joaomagdaleno.music_hub.playback.PlayerCommands.getLikeButton
+import com.joaomagdaleno.music_hub.utils.Serializer
 import com.joaomagdaleno.music_hub.playback.PlayerCommands.getRepeatButton
 import com.joaomagdaleno.music_hub.playback.PlayerState
 import com.joaomagdaleno.music_hub.playback.ResumptionUtils
 import com.joaomagdaleno.music_hub.playback.exceptions.PlayerException
-import com.joaomagdaleno.music_hub.utils.Serializer.rootCause
+// Import removed
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -53,7 +52,7 @@ class PlayerEventListener(
             throw Exception("This is possible")
         currentFlow.value = player.currentMediaItem?.let {
             val isPlaying = player.isPlaying && player.playbackState == Player.STATE_READY
-            PlayerState.Current(player.currentMediaItemIndex, it, it.isLoaded, isPlaying)
+            PlayerState.Current(player.currentMediaItemIndex, it, MediaItemUtils.isLoaded(it), isPlaying)
         }
     }
 
@@ -107,13 +106,13 @@ class PlayerEventListener(
         scope.launch { throwableFlow.emit(PlayerException(mediaItem, cause)) }
 
         val old = last
-        last = cause.rootCause::class
+        last = Serializer.getRootCause(cause)::class
         if (old != null && old == last) currentRetries++
         else currentRetries = 0
 
         if (mediaItem == null) return
         val index = player.currentMediaItemIndex
-        val retries = mediaItem.retries
+        val retries = MediaItemUtils.getRetries(mediaItem)
 
         if (currentRetries >= maxRetries) return
         if (retries >= maxSingleItemRetries) {

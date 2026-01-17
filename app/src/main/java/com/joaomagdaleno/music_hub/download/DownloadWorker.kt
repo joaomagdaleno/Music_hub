@@ -8,9 +8,8 @@ import android.os.Build
 import androidx.annotation.OptIn
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.media3.common.util.NotificationUtil
-import androidx.media3.common.util.NotificationUtil.createNotificationChannel
 import androidx.media3.common.util.UnstableApi
+import com.joaomagdaleno.music_hub.utils.NotificationUtils
 import androidx.work.CoroutineWorker
 import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
@@ -44,9 +43,9 @@ class DownloadWorker(
     private fun createNotification(
         tracks: Int,
     ): ForegroundInfo {
-        NotificationUtil.createNotificationChannel(
+        NotificationUtils.createNotificationChannel(
             context, PROGRESS_CHANNEL_ID, R.string.download_progress, 0,
-            NotificationUtil.IMPORTANCE_DEFAULT
+            NotificationManagerCompat.IMPORTANCE_DEFAULT
         )
         val notificationBuilder = NotificationCompat.Builder(context, PROGRESS_CHANNEL_ID)
         val intent = getMainIntent(context)

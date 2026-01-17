@@ -1,5 +1,7 @@
 package com.joaomagdaleno.music_hub.ui.media.more
 
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.DiffUtil
 
@@ -27,3 +29,11 @@ data class MoreButton(
         ) = createButton(dialog, id, dialog.getString(title), icon, onClick)
     }
 }
+
+fun DialogFragment.button(
+    id: String, @StringRes title: Int, @DrawableRes icon: Int, onClick: () -> Unit
+) = MoreButton.createButton(this, id, title, icon, onClick)
+
+fun DialogFragment.button(
+    id: String, title: String, @DrawableRes icon: Int, onClick: () -> Unit
+) = MoreButton.createButton(this, id, title, icon, onClick)

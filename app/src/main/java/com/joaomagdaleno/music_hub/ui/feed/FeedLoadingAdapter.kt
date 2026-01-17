@@ -128,7 +128,7 @@ class FeedLoadingAdapter(
                 }
 
                 override fun onError(view: View, error: Throwable) {
-                    UiUtils.getExceptionMessage(fragment.requireActivity(), error, retry).action?.handler?.invoke()
+                    UiUtils.getExceptionMessage(fragment.requireActivity(), error, view).action?.handler?.invoke()
                 }
 
                 override fun onLoginRequired(view: View, error: ClientException.LoginRequired) {

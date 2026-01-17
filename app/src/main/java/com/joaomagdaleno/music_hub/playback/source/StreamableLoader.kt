@@ -9,11 +9,7 @@ import com.joaomagdaleno.music_hub.di.App
 import com.joaomagdaleno.music_hub.download.Downloader
 import com.joaomagdaleno.music_hub.common.models.MediaState
 import com.joaomagdaleno.music_hub.playback.MediaItemUtils
-import com.joaomagdaleno.music_hub.playback.MediaItemUtils.downloaded
-import com.joaomagdaleno.music_hub.playback.MediaItemUtils.isLoaded
-import com.joaomagdaleno.music_hub.playback.MediaItemUtils.serverIndex
-import com.joaomagdaleno.music_hub.playback.MediaItemUtils.state
-import com.joaomagdaleno.music_hub.playback.MediaItemUtils.track
+// Imports removed
 import com.joaomagdaleno.music_hub.utils.FileLogger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -29,7 +25,7 @@ class StreamableLoader(
     suspend fun load(mediaItem: MediaItem) = withContext(Dispatchers.IO) {
         FileLogger.log("StreamableLoader", "load() called for mediaItem.id=${mediaItem.mediaId}")
         // No need to wait for sources flow
-        val new = if (mediaItem.isLoaded) {
+        val new = if (MediaItemUtils.isLoaded(mediaItem)) {
             FileLogger.log("StreamableLoader", "mediaItem already loaded")
             mediaItem
         } else {
@@ -55,8 +51,8 @@ class StreamableLoader(
     }
 
     private suspend fun loadTrack(item: MediaItem): MediaState.Loaded<Track> {
-        FileLogger.log("StreamableLoader", "loadTrack() called for item.state=${item.state::class.simpleName}")
-        return when (val state = item.state) {
+        FileLogger.log("StreamableLoader", "loadTrack() called for item.state=${MediaItemUtils.getState(item)::class.simpleName}")
+        return when (val state = MediaItemUtils.getState(item)) {
              is MediaState.Loaded<*> -> {
                  FileLogger.log("StreamableLoader", "loadTrack() - already MediaState.Loaded")
                  state as MediaState.Loaded<Track>
@@ -85,10 +81,10 @@ class StreamableLoader(
     }
 
     private suspend fun loadServer(mediaItem: MediaItem): Result<Streamable.Media.Server> {
-        FileLogger.log("StreamableLoader", "loadServer() called for track=${mediaItem.track.title}")
-        val downloaded = mediaItem.downloaded
-        val servers = mediaItem.track.servers
-        val index = mediaItem.serverIndex
+        FileLogger.log("StreamableLoader", "loadServer() called for track=${MediaItemUtils.getTrack(mediaItem).title}")
+        val downloaded = MediaItemUtils.getDownloaded(mediaItem)
+        val servers = MediaItemUtils.getTrack(mediaItem).servers
+        val index = MediaItemUtils.getServerIndex(mediaItem)
         FileLogger.log("StreamableLoader", "loadServer() - downloaded=${downloaded?.size ?: 0}, servers=${servers.size}, index=$index")
         
         if (!downloaded.isNullOrEmpty() && servers.size == index) {
@@ -104,7 +100,7 @@ class StreamableLoader(
         FileLogger.log("StreamableLoader", "loadServer() - fetching stream URL from repository")
         return runCatching {
              // Use Repository to get stream URL
-             val url = repository.getStreamUrl(mediaItem.track)
+             val url = repository.getStreamUrl(MediaItemUtils.getTrack(mediaItem))
              FileLogger.log("StreamableLoader", "loadServer() - got stream URL: $url")
              // Create server object
              val stream = Streamable.Stream.Http(

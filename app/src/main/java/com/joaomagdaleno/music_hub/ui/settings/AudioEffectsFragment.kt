@@ -16,7 +16,7 @@ import com.joaomagdaleno.music_hub.utils.ui.FastScrollerHelper
 
 class AudioEffectsFragment : Fragment() {
 
-    private var binding: FragmentGenericCollapsableBinding by autoCleared()
+    private var binding: FragmentGenericCollapsableBinding by autoCleared(this)
     private val fragment = AudioFxFragment()
 
     override fun onCreateView(
@@ -43,7 +43,7 @@ class AudioEffectsFragment : Fragment() {
     }
 
     class AudioFxFragment : Fragment() {
-        var binding by autoCleared<FragmentAudioFxBinding>()
+        var binding by autoCleared<FragmentAudioFxBinding>(this)
 
         override fun onCreateView(
             inflater: LayoutInflater,
@@ -62,7 +62,7 @@ class AudioEffectsFragment : Fragment() {
             bind()
             binding.root.apply {
                 clipToPadding = false
-                UiUtils.applyInsets(this) { UiUtils.applyContentInsets(this, it) }
+                UiUtils.applyInsets(this@AudioFxFragment) { UiUtils.applyContentInsets(this@apply, it) }
                 isVerticalScrollBarEnabled = false
                 FastScrollerHelper.applyTo(this)
             }

@@ -16,7 +16,7 @@ import com.google.android.material.R
 import com.google.android.material.color.MaterialColors
 import com.joaomagdaleno.music_hub.databinding.ItemRulerBinding
 import com.joaomagdaleno.music_hub.databinding.ItemRulerEmptyBinding
-import com.joaomagdaleno.music_hub.utils.ui.UiUtils.dpToPx
+
 
 class RulerAdapter<T>(
     private val listener: Listener<T>
@@ -41,7 +41,7 @@ class RulerAdapter<T>(
             init {
                 parent.doOnLayout {
                     binding.root.updateLayoutParams {
-                        val itemWidth = 24.dpToPx(it.context)
+                        val itemWidth = UiUtils.dpToPx(it.context, 24)
                         width = (it.width - itemWidth) / 2
                     }
                 }
@@ -138,7 +138,7 @@ class RulerAdapter<T>(
         recyclerView?.run {
             val manager = layoutManager as LinearLayoutManager
             doOnLayout {
-                val itemWidth = 24.dpToPx(context)
+                val itemWidth = UiUtils.dpToPx(context, 24)
                 val pad = (width - itemWidth) / 2
                 manager.scrollToPositionWithOffset(selectedIndex, pad)
                 post {

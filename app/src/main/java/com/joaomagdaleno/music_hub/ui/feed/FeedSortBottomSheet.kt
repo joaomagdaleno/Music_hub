@@ -25,7 +25,7 @@ class FeedSortBottomSheet : BottomSheetDialogFragment() {
     private val loadedShelves by lazy { feedData.loadedShelves }
     private val sortState by lazy { feedData.feedSortState }
 
-    private var binding by autoCleared<DialogSortBinding>()
+    private var binding by autoCleared<DialogSortBinding>(this)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
@@ -60,11 +60,11 @@ class FeedSortBottomSheet : BottomSheetDialogFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        observe(loadedShelves) {
+        observe(this, loadedShelves) {
             binding.progressIndicator.isVisible = it == null
             applySorts()
         }
-        observe(sortState) {
+        observe(this, sortState) {
             applySorts()
             binding.saveCheckbox.isChecked = it?.save ?: false
             binding.reversedSwitch.isChecked = it?.reversed ?: false

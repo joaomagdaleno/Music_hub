@@ -10,9 +10,7 @@ import com.joaomagdaleno.music_hub.di.App
 import com.joaomagdaleno.music_hub.download.Downloader
 import com.joaomagdaleno.music_hub.common.models.MediaState
 import com.joaomagdaleno.music_hub.playback.MediaItemUtils
-import com.joaomagdaleno.music_hub.playback.MediaItemUtils.context
-import com.joaomagdaleno.music_hub.playback.MediaItemUtils.origin
-import com.joaomagdaleno.music_hub.playback.MediaItemUtils.track
+// Imports removed
 import com.joaomagdaleno.music_hub.playback.PlayerState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -84,7 +82,7 @@ class PlayerRadio(
 
     private suspend fun loadPlaylist() {
         val mediaItem = withContext(Dispatchers.Main) { player.currentMediaItem } ?: return
-        val item = mediaItem.track
+        val item = MediaItemUtils.getTrack(mediaItem)
         stateFlow.value = PlayerState.Radio.Loading
         val loaded = start(repository, item)
         stateFlow.value = loaded ?: PlayerState.Radio.Empty

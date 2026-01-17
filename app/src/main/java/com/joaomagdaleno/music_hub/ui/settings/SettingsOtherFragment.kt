@@ -21,7 +21,7 @@ class SettingsOtherFragment : BaseSettingsFragment() {
 
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
-            configure()
+            BaseSettingsFragment.configure(this)
         }
 
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {

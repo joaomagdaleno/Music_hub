@@ -7,9 +7,7 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import com.joaomagdaleno.music_hub.common.models.TrackDetails
 import com.joaomagdaleno.music_hub.data.repository.MusicRepository
-import com.joaomagdaleno.music_hub.playback.MediaItemUtils.context
-import com.joaomagdaleno.music_hub.playback.MediaItemUtils.origin
-import com.joaomagdaleno.music_hub.playback.MediaItemUtils.track
+import com.joaomagdaleno.music_hub.playback.MediaItemUtils
 import com.joaomagdaleno.music_hub.playback.PlayerState
 import com.joaomagdaleno.music_hub.utils.PauseTimer
 import kotlinx.coroutines.CoroutineScope
@@ -47,7 +45,7 @@ class TrackingListener(
     private suspend fun getDetails() = withContext(Dispatchers.Main) {
         current?.let { curr ->
             val (pos, total) = player.currentPosition to player.duration.takeIf { it != C.TIME_UNSET }
-            TrackDetails(curr.origin, curr.track, curr.context, pos, total)
+            TrackDetails(MediaItemUtils.getOrigin(curr), MediaItemUtils.getTrack(curr), MediaItemUtils.getContext(curr), pos, total)
         }
     }
 
@@ -65,7 +63,7 @@ class TrackingListener(
     private val mutex = Mutex()
     private val timers = mutableMapOf<String, PauseTimer>()
     private fun onTrackChanged(mediaItem: MediaItem?) {
-        previousId = current?.origin
+        previousId = current?.let { MediaItemUtils.getOrigin(it) }
         current = mediaItem
 
         // Save Queue and Index on track change

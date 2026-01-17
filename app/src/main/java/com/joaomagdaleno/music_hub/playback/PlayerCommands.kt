@@ -7,7 +7,7 @@ import androidx.media3.common.Player
 import androidx.media3.session.CommandButton
 import androidx.media3.session.SessionCommand
 import com.joaomagdaleno.music_hub.R
-import com.joaomagdaleno.music_hub.playback.MediaItemUtils.isLiked
+import com.joaomagdaleno.music_hub.playback.MediaItemUtils
 
 object PlayerCommands {
     val likeCommand = SessionCommand("liked", Bundle.EMPTY)
@@ -25,7 +25,7 @@ object PlayerCommands {
 
     fun getLikeButton(context: Context, item: MediaItem) = run {
         val builder = CommandButton.Builder()
-        if (!item.isLiked) builder
+        if (!MediaItemUtils.isLiked(item)) builder
             .setDisplayName(context.getString(R.string.like))
             .setIconResId(R.drawable.ic_favorite_20dp)
             .setSessionCommand(likeCommand)

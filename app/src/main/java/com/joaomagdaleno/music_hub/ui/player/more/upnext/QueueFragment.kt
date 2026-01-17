@@ -18,7 +18,7 @@ import org.koin.androidx.viewmodel.ext.android.activityViewModel
 
 class QueueFragment : Fragment() {
 
-    private var binding by autoClearedNullable<FragmentPlayerQueueBinding>()
+    private var binding by autoClearedNullable<FragmentPlayerQueueBinding>(this)
     private val viewModel by activityViewModel<PlayerViewModel>()
 
     override fun onCreateView(
@@ -80,7 +80,7 @@ class QueueFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        setupTransition(view, false, axis = MaterialSharedAxis.Y)
+        setupTransition(this, view, false, axis = MaterialSharedAxis.Y)
         val recyclerView = binding!!.root
         recyclerView.adapter = queueAdapter
         touchHelper.attachToRecyclerView(recyclerView)
@@ -100,8 +100,8 @@ class QueueFragment : Fragment() {
             }
         }
 
-        observe(viewModel.playerState.current) { submit() }
-        observe(viewModel.queueFlow) { submit() }
+        observe(this, viewModel.playerState.current) { submit() }
+        observe(this, viewModel.queueFlow) { submit() }
 
         val index = viewModel.playerState.current.value?.index ?: return
         manager.scrollToPositionWithOffset(index + 1, screenHeight)

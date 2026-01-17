@@ -39,7 +39,7 @@ class MediaDetailsFragment : Fragment(R.layout.fragment_media_details) {
             com.joaomagdaleno.music_hub.common.models.Feed.Buttons(showPlayAndShuffle = true),
             true,
             cached = { viewModel.trackSourceCachedFlow.value },
-            load = { viewModel.tracksLoadedFlow.value as? com.joaomagdaleno.music_hub.ui.feed.FeedData.State<com.joaomagdaleno.music_hub.common.models.Feed<com.joaomagdaleno.music_hub.common.models.Shelf>> }
+            loader = { viewModel.tracksLoadedFlow.value as? com.joaomagdaleno.music_hub.ui.feed.FeedData.State<com.joaomagdaleno.music_hub.common.models.Feed<com.joaomagdaleno.music_hub.common.models.Shelf>> }
         )
     }
 
@@ -49,7 +49,7 @@ class MediaDetailsFragment : Fragment(R.layout.fragment_media_details) {
             com.joaomagdaleno.music_hub.common.models.Feed.Buttons(),
             false,
             cached = { viewModel.feedSourceCachedFlow.value },
-            load = { viewModel.feedSourceLoadedFlow.value }
+            loader = { viewModel.feedSourceLoadedFlow.value }
         )
     }
 

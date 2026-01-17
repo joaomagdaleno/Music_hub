@@ -69,13 +69,13 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
     }
 
     private val feedAdapter by lazy {
-        FeedAdapter.getFeedAdapter(feedData, listener)
+        FeedAdapter.getFeedAdapter(this, feedData, listener)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val binding = FragmentSearchBinding.bind(view)
         AnimationUtils.setupTransition(this, view, applyBackground = false, axis = MaterialSharedAxis.Y)
-        MainFragment.applyInsets(this, binding.recyclerView, binding.appBarOutline) { _, it ->
+        MainFragment.applyInsets(this, binding.recyclerView, binding.appBarOutline) { it ->
             UiUtils.configureSwipeRefresh(binding.swipeRefresh, it)
         }
         val uiViewModel by activityViewModel<UiViewModel>()

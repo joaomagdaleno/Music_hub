@@ -63,8 +63,8 @@ class MediaFragment : Fragment(R.layout.fragment_media), MediaDetailsFragment.Pa
             ).show(parentFragmentManager, null)
             true
         }
-        UiUtils.applyInsets(this) {
-            UiUtils.applyFabInsets(binding.fabContainer, it, it.system)
+        UiUtils.applyInsets(this) { insets ->
+            UiUtils.applyFabInsets(binding.fabContainer, insets, systemInsets.value)
         }
 
         ContextUtils.observe(this, viewModel.itemResultFlow) { result ->
@@ -79,8 +79,8 @@ class MediaFragment : Fragment(R.layout.fragment_media), MediaDetailsFragment.Pa
                 }
             }
             ImageUtils.loadInto(item.cover, binding.cover, MediaViewHolder.getPlaceHolder(item))
-            ImageUtils.loadWithThumb(item.background, view) { 
-                UiUtils.applyGradient(this@MediaFragment, view, it) 
+            ImageUtils.loadWithThumb(item.background, view) { _, drawable ->
+                UiUtils.applyGradient(this@MediaFragment, view, drawable)
             }
             val isEditable = (result?.getOrNull()?.item as? Playlist)?.isEditable ?: false
             binding.fabEditPlaylist.isVisible = isEditable

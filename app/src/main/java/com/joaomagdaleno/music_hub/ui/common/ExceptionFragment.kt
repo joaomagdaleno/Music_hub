@@ -38,7 +38,7 @@ class ExceptionFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        AnimationUtils.setupTransition(view)
+        AnimationUtils.setupTransition(this, view)
         UiUtils.applyInsets(this) { insets ->
             UiUtils.applyContentInsets(binding.nestedScrollView, insets)
             UiUtils.applyFabInsets(binding.fabContainer, insets, systemInsets.value)

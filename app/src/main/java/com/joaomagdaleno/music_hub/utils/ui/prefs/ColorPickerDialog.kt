@@ -13,7 +13,7 @@ import kotlin.random.Random
 
 class ColorPickerDialog : DialogFragment() {
 
-    var binding by autoCleared<DialogColorPickerBinding>()
+    var binding by autoCleared<DialogColorPickerBinding>(this)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {

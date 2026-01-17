@@ -44,7 +44,7 @@ fun HomeFeed(
             buttons = EMPTY,
             loader = {
                 FileLogger.log("HomeScreen", "loader lambda invoked - calling getHomeFeed()")
-                val feed = getHomeFeed().toFeed()
+                val feed = it.getHomeFeed().toFeed()
                 FileLogger.log("HomeScreen", "getHomeFeed() returned, converting to FeedData.State")
                 FeedData.State("internal", null, feed)
             }

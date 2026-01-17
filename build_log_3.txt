@@ -1,35 +1,35 @@
 Configuration on demand is an incubating feature.
 Calculating task graph as configuration cache cannot be reused due to --refresh-dependencies
-> Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
 > Task :app:preBuild UP-TO-DATE
 > Task :app:preDebugBuild UP-TO-DATE
+> Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
 > Task :app:clean
 > Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
 > Task :app:generateDebugResValues FROM-CACHE
 > Task :app:processDebugGoogleServices FROM-CACHE
+> Task :app:injectCrashlyticsVersionControlInfoDebug FROM-CACHE
 > Task :app:injectCrashlyticsMappingFileIdDebug
 > Task :app:generateDebugResources FROM-CACHE
-> Task :app:injectCrashlyticsVersionControlInfoDebug FROM-CACHE
 > Task :app:dataBindingMergeDependencyArtifactsDebug
-> Task :app:mapDebugSourceSetPaths
 > Task :app:generateDebugBuildConfig FROM-CACHE
 > Task :app:createDebugCompatibleScreenManifests
 > Task :app:extractDebugSupportedLocales FROM-CACHE
+> Task :app:mapDebugSourceSetPaths
 > Task :app:extractDeepLinksDebug FROM-CACHE
-> Task :app:processDebugMainManifest FROM-CACHE
-> Task :app:generateDebugLocaleConfig FROM-CACHE
 > Task :app:javaPreCompileDebug FROM-CACHE
-> Task :app:processDebugManifest FROM-CACHE
-> Task :app:processDebugManifestForPackage FROM-CACHE
 > Task :app:mergeDebugShaders
 > Task :app:compileDebugShaders NO-SOURCE
 > Task :app:generateDebugAssets UP-TO-DATE
 > Task :app:mergeDebugAssets
 > Task :app:compressDebugAssets FROM-CACHE
+> Task :app:processDebugMainManifest FROM-CACHE
+> Task :app:processDebugManifest FROM-CACHE
+> Task :app:processDebugManifestForPackage FROM-CACHE
 > Task :app:desugarDebugFileDependencies FROM-CACHE
-> Task :app:checkDebugAarMetadata
 > Task :app:mergeDebugJniLibFolders
+> Task :app:generateDebugLocaleConfig FROM-CACHE
 > Task :app:mergeDebugNativeLibs
+> Task :app:checkDebugAarMetadata
 
 > Task :app:stripDebugDebugSymbols
 Unable to strip the following libraries, packaging them as they are: libandroidx.graphics.path.so, libdatastore_shared_counter.so. Run with --info option to learn more.
@@ -43,22 +43,13 @@ Unable to strip the following libraries, packaging them as they are: libandroidx
 > Task :app:parseDebugLocalResources FROM-CACHE
 > Task :app:mergeExtDexDebug FROM-CACHE
 > Task :app:mergeDebugResources FROM-CACHE
-> Task :app:processDebugResources FROM-CACHE
 > Task :app:dataBindingGenBaseClassesDebug FROM-CACHE
-> Task :app:kspDebugKotlin FROM-CACHE
+> Task :app:processDebugResources FROM-CACHE
+> Task :app:kspDebugKotlin
 
 > Task :app:compileDebugKotlin FAILED
 e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/feed/FeedAdapter.kt:145:43 Unresolved reference 'it'.
-e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/media/more/MoreHeaderAdapter.kt:17:74 Unresolved reference 'typeInt'.
-e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/media/more/MoreHeaderAdapter.kt:63:66 Unresolved reference 'MediaHeaderAdapter'.
-e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/PlayerFragment.kt:109:25 Unresolved reference 'setOnClickListener'.
-e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/PlayerFragment.kt:459:9 Unresolved reference 'MediaMoreBottomSheet'.
-e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/more/PlayerMoreFragment.kt:83:61 Unresolved reference 'defaultPlayerColors'.
-e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/quality/QualitySelectionBottomSheet.kt:51:13 Unresolved reference 'UiUtils'.
-e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/playlist/SelectableMediaAdapter.kt:12:88 Unresolved reference 'bind'.
-e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/playlist/SelectableMediaAdapter.kt:63:13 Unresolved reference 'MediaViewHolder'.
-e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/playlist/save/MediaItemAdapter.kt:53:13 Unresolved reference 'MediaViewHolder'.
-e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/widget/BaseWidget.kt:66:57 Unresolved reference 'PlayerCommands'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/playlist/SelectableMediaAdapter.kt:77:27 Unresolved reference 'play'.
 
 FAILURE: Build failed with an exception.
 
@@ -73,6 +64,6 @@ Execution failed for task ':app:compileDebugKotlin'.
 > Run with --scan to generate a Build Scan (Powered by Develocity).
 > Get more help at https://help.gradle.org.
 
-BUILD FAILED in 2m 24s
-38 actionable tasks: 16 executed, 22 from cache
+BUILD FAILED in 2m 33s
+38 actionable tasks: 17 executed, 21 from cache
 Configuration cache entry stored.

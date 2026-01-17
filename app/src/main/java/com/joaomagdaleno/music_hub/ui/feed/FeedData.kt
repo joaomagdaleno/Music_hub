@@ -57,17 +57,19 @@ data class FeedData(
     private val stateFlow = cachedState.combine(loadedState) { a, b -> a to b }
         .stateIn(scope, SharingStarted.Lazily, null to null)
 
-    private val cachedDataFlow = CoroutineUtils.combineTransformLatest(cachedState, selectedTabFlow) { feed, tab ->
-        emit(null)
-        if (feed == null) return@combineTransformLatest
-        emit(getData(feed, tab))
-    }.stateIn(scope, SharingStarted.Lazily, null)
+    private val cachedDataFlow = combine(cachedState, selectedTabFlow) { feed, tab -> feed to tab }
+        .transformLatest { (feed, tab) ->
+            emit(null)
+            if (feed == null) return@transformLatest
+            emit(getData(feed, tab))
+        }.stateIn(scope, SharingStarted.Lazily, null)
 
-    private val loadedDataFlow = CoroutineUtils.combineTransformLatest(loadedState, selectedTabFlow) { feed, tab ->
-        emit(null)
-        if (feed == null) return@combineTransformLatest
-        emit(getData(feed, tab))
-    }.stateIn(scope, SharingStarted.Lazily, null)
+    private val loadedDataFlow = combine(loadedState, selectedTabFlow) { feed, tab -> feed to tab }
+        .transformLatest { (feed, tab) ->
+            emit(null)
+            if (feed == null) return@transformLatest
+            emit(getData(feed, tab))
+        }.stateIn(scope, SharingStarted.Lazily, null)
 
     private suspend fun getData(
         state: Result<State<Feed<Shelf>>?>, tab: Tab?
@@ -139,23 +141,26 @@ data class FeedData(
     }.flowOn(Dispatchers.IO).stateIn(scope, SharingStarted.Lazily, null)
 
     val cachedFeedTypeFlow =
-        CoroutineUtils.combineTransformLatest(cachedDataFlow, feedSortState, searchClickedFlow) { _ ->
-            emit(null)
-            val cached = cachedDataFlow.value ?: return@combineTransformLatest
-            emit(getFeedSourceData(cached))
-        }.stateIn(scope, SharingStarted.Lazily, null)
+        combine(cachedDataFlow, feedSortState, searchClickedFlow) { _, _, _ -> Unit }
+            .transformLatest {
+                emit(null)
+                val cached = cachedDataFlow.value ?: return@transformLatest
+                emit(getFeedSourceData(cached))
+            }.stateIn(scope, SharingStarted.Lazily, null)
 
     val loadedFeedTypeFlow =
-        CoroutineUtils.combineTransformLatest(loadedDataFlow, feedSortState, searchClickedFlow) { _ ->
-            emit(null)
-            val loaded = loadedDataFlow.value ?: return@combineTransformLatest
-            emit(getFeedSourceData(loaded))
-        }.stateIn(scope, SharingStarted.Lazily, null)
+        combine(loadedDataFlow, feedSortState, searchClickedFlow) { _, _, _ -> Unit }
+            .transformLatest {
+                emit(null)
+                val loaded = loadedDataFlow.value ?: return@transformLatest
+                emit(getFeedSourceData(loaded))
+            }.stateIn(scope, SharingStarted.Lazily, null)
 
     val pagingFlow =
-        cachedFeedTypeFlow.combineTransformLatest(loadedFeedTypeFlow) { cached, loaded ->
-            emitAll(PagedSource(loaded, cached).flow)
-        }.cachedIn(scope)
+        combine(cachedFeedTypeFlow, loadedFeedTypeFlow) { cached, loaded -> cached to loaded }
+            .transformLatest { (cached, loaded) ->
+                emitAll(PagedSource(loaded, cached).flow)
+            }.cachedIn(scope)
 
     private suspend fun getFeedSourceData(
         result: Result<State<Feed.Data<Shelf>>?>

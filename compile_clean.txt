@@ -1,0 +1,316 @@
+Starting a Gradle Daemon, 4 stopped Daemons could not be reused, use --status for details
+Configuration on demand is an incubating feature.
+Reusing configuration cache.
+> Task :app:preBuild UP-TO-DATE
+> Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:injectCrashlyticsMappingFileIdDebug UP-TO-DATE
+> Task :app:processDebugGoogleServices UP-TO-DATE
+> Task :app:injectCrashlyticsVersionControlInfoDebug UP-TO-DATE
+> Task :app:generateDebugResValues UP-TO-DATE
+> Task :app:generateDebugBuildConfig UP-TO-DATE
+> Task :app:extractDebugSupportedLocales UP-TO-DATE
+> Task :app:generateDebugResources UP-TO-DATE
+> Task :app:generateDebugLocaleConfig UP-TO-DATE
+> Task :app:checkDebugAarMetadata UP-TO-DATE
+> Task :app:mergeDebugResources UP-TO-DATE
+> Task :app:mapDebugSourceSetPaths UP-TO-DATE
+> Task :app:extractDeepLinksDebug UP-TO-DATE
+> Task :app:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :app:dataBindingMergeDependencyArtifactsDebug UP-TO-DATE
+> Task :app:packageDebugResources UP-TO-DATE
+> Task :app:parseDebugLocalResources UP-TO-DATE
+> Task :app:dataBindingGenBaseClassesDebug UP-TO-DATE
+> Task :app:processDebugMainManifest UP-TO-DATE
+> Task :app:processDebugManifest UP-TO-DATE
+> Task :app:processDebugManifestForPackage UP-TO-DATE
+> Task :app:processDebugResources UP-TO-DATE
+> Task :app:kspDebugKotlin
+> Task :app:compileDebugKotlin
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/playback/AndroidAutoCallback.kt:226:97 Argument type mismatch: actual type is 'Shelf.Category', but 'EchoMediaItem' was expected.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/common/UiViewModel.kt:262:26 Unresolved reference 'lifecycleScope'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/compose/screens/HomeScreen.kt:47:28 Unresolved reference 'getHomeFeed'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/download/DownloadsAdapter.kt:70:103 Argument type mismatch: actual type is 'ExceptionData', but 'Throwable?' was expected.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/feed/FeedAdapter.kt:129:13 'bind' hides member of supertype 'ViewHolder' and needs an 'override' modifier.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/feed/FeedAdapter.kt:145:43 Unresolved reference 'it'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/feed/FeedFragment.kt:60:54 Unresolved reference 'toFeed'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/feed/FeedLoadingAdapter.kt:131:84 Argument type mismatch: actual type is 'Function0<Unit>', but 'View?' was expected.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/feed/FeedSort.kt:149:81 Argument type mismatch: actual type is 'EchoMediaItem.Lists?', but 'EchoMediaItem.Lists' was expected.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/feed/FeedSortBottomSheet.kt:28:58 No value passed for parameter 'fragment'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/feed/FeedSortBottomSheet.kt:63:9 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/feed/FeedSortBottomSheet.kt:63:17 Argument type mismatch: actual type is 'MutableStateFlow<List<Shelf>?>', but 'LifecycleOwner' was expected.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/feed/FeedSortBottomSheet.kt:63:17 No value passed for parameter 'flow'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/feed/FeedSortBottomSheet.kt:63:32 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/feed/FeedSortBottomSheet.kt:67:9 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/feed/FeedSortBottomSheet.kt:67:17 Argument type mismatch: actual type is 'MutableStateFlow<FeedSort.State?>', but 'LifecycleOwner' was expected.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/feed/FeedSortBottomSheet.kt:67:17 No value passed for parameter 'flow'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/feed/FeedSortBottomSheet.kt:67:28 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/feed/FeedSortBottomSheet.kt:69:50 Unresolved reference 'save'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/feed/FeedSortBottomSheet.kt:70:52 Function invocation 'reversed()' expected.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/feed/viewholders/MediaGridViewHolder.kt:58:33 Expression 'subtitle' of type 'String?' cannot be invoked as a function. Function 'invoke()' is not found.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/feed/viewholders/MediaGridViewHolder.kt:66:32 Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type 'PlayerState.Current?'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/main/LibraryFragment.kt:40:66 Argument type mismatch: actual type is 'FeedData', but 'Fragment' was expected.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/main/LibraryFragment.kt:40:76 Argument type mismatch: actual type is 'FeedClickListener', but 'FeedData' was expected.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/main/LibraryFragment.kt:40:76 No value passed for parameter 'listener'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/main/LibraryFragment.kt:44:40 Argument type mismatch: actual type is 'View', but 'Fragment' was expected.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/main/LibraryFragment.kt:44:46 Argument type mismatch: actual type is 'Boolean', but 'View' was expected.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/main/LibraryFragment.kt:44:53 Argument type mismatch: actual type is 'Int', but 'Boolean' was expected.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/main/search/QuickSearchViewHolder.kt:10:82 Unresolved reference 'placeHolder'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/main/search/QuickSearchViewHolder.kt:60:39 Expression 'subtitle' of type 'String?' cannot be invoked as a function. Function 'invoke()' is not found.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/main/search/QuickSearchViewHolder.kt:62:42 Unresolved reference 'not' for operator '!'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/main/search/QuickSearchViewHolder.kt:64:30 Unresolved reference 'loadInto'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/main/search/QuickSearchViewHolder.kt:64:65 Unresolved reference 'placeHolder'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/main/search/SearchFragment.kt:72:36 Argument type mismatch: actual type is 'FeedData', but 'Fragment' was expected.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/main/search/SearchFragment.kt:72:46 Argument type mismatch: actual type is 'FeedClickListener', but 'FeedData' was expected.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/main/search/SearchFragment.kt:72:46 No value passed for parameter 'listener'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/main/search/SearchFragment.kt:78:85 Argument type mismatch: actual type is 'Function3<UiViewModel, UiViewModel.Insets, ERROR CLASS: Cannot infer type for parameter it, Unit>', but 'Function2<UiViewModel, UiViewModel.Insets, Unit>' was expected.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/main/search/SearchFragment.kt:78:90 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/media/MediaDetailsFragment.kt:42:13 No parameter with name 'load' found.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/media/MediaDetailsFragment.kt:42:13 No value passed for parameter 'loader'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/media/MediaDetailsFragment.kt:52:13 No parameter with name 'load' found.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/media/MediaDetailsFragment.kt:52:13 No value passed for parameter 'loader'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/media/MediaDetailsViewModel.kt:37:28 New inference error [NewConstraintError at Incorporate TypeVariable(R) == kotlin/Nothing? from Fix variable R from position Fix variable R: com/joaomagdaleno/music_hub/ui/feed/FeedData.State<TypeVariable(T)> <!: kotlin/Nothing?].
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/media/MediaDetailsViewModel.kt:53:34 Unresolved reference 'toFeed'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/media/MediaDetailsViewModel.kt:54:23 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/media/MediaDetailsViewModel.kt:67:113 Unresolved reference 'toFeed'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/media/MediaFragment.kt:67:65 Unresolved reference 'system'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/media/MediaFragment.kt:82:61 Argument type mismatch: actual type is 'Function0<Unit>', but 'Function2<View, Drawable?, Unit>' was expected.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/media/MediaFragment.kt:83:65 Unresolved reference 'it'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/media/MediaHeaderAdapter.kt:347:61 Unresolved reference 'VideoSong'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/media/MediaHeaderAdapter.kt:348:44 Unresolved reference 'Video'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/media/MediaHeaderAdapter.kt:348:62 Unresolved reference 'HorizontalVideo'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/media/more/MediaMoreBottomSheet.kt:23:71 Unresolved reference 'button'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/media/more/MediaMoreBottomSheet.kt:135:38 Not enough information to infer type argument for 'K'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/media/more/MediaMoreBottomSheet.kt:135:54 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/media/more/MediaMoreBottomSheet.kt:135:54 Not enough information to infer type argument for 'T'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/media/more/MediaMoreBottomSheet.kt:136:9 Unresolved reference 'button'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/media/more/MediaMoreBottomSheet.kt:139:9 Unresolved reference 'button'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/media/more/MediaMoreBottomSheet.kt:142:9 Unresolved reference 'button'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/media/more/MediaMoreBottomSheet.kt:145:12 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/media/more/MediaMoreBottomSheet.kt:145:12 Not enough information to infer type argument for 'T'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/media/more/MediaMoreBottomSheet.kt:150:9 Unresolved reference 'button'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/media/more/MediaMoreBottomSheet.kt:154:13 Unresolved reference 'button'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/media/more/MediaMoreBottomSheet.kt:159:13 Unresolved reference 'button'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/media/more/MediaMoreBottomSheet.kt:171:42 Unresolved reference 'button'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/media/more/MediaMoreBottomSheet.kt:177:29 Unresolved reference 'button'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/media/more/MediaMoreBottomSheet.kt:184:29 Unresolved reference 'button'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/media/more/MediaMoreBottomSheet.kt:189:82 Unresolved reference 'button'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/media/more/MediaMoreBottomSheet.kt:210:31 Unresolved reference 'button'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/media/more/MediaMoreBottomSheet.kt:216:35 Unresolved reference 'button'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/media/more/MediaMoreBottomSheet.kt:228:40 Unresolved reference 'button'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/media/more/MediaMoreBottomSheet.kt:234:37 Unresolved reference 'button'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/media/more/MediaMoreBottomSheet.kt:241:37 Unresolved reference 'button'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/media/more/MediaMoreBottomSheet.kt:247:38 Unresolved reference 'button'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/media/more/MediaMoreBottomSheet.kt:253:39 Unresolved reference 'button'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/media/more/MediaMoreBottomSheet.kt:258:39 Unresolved reference 'button'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/media/more/MediaMoreBottomSheet.kt:269:7 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/media/more/MediaMoreBottomSheet.kt:270:9 Unresolved reference 'button'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/media/more/MoreHeaderAdapter.kt:17:74 Unresolved reference 'typeInt'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/media/more/MoreHeaderAdapter.kt:63:71 Unresolved reference 'typeInt'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/media/more/MoreHeaderAdapter.kt:71:40 Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type 'PlayerState.Current?'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/PlayerFragment.kt:109:25 Unresolved reference 'setOnClickListener'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/PlayerFragment.kt:459:9 Unresolved reference 'MediaMoreBottomSheet'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/PlayerTrackAdapter.kt:61:42 Unresolved reference 'dpToPx'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/PlayerTrackAdapter.kt:71:43 Unresolved reference 'isLandscape'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/PlayerTrackAdapter.kt:74:61 Unresolved reference 'isRTL'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/PlayerTrackAdapter.kt:82:40 Function 'component1()' is ambiguous for this expression: 
+fun <T> Array<out T>.component1(): T
+fun ByteArray.component1(): Byte
+fun ShortArray.component1(): Short
+fun IntArray.component1(): Int
+fun LongArray.component1(): Long
+fun FloatArray.component1(): Float
+fun DoubleArray.component1(): Double
+fun BooleanArray.component1(): Boolean
+fun CharArray.component1(): Char
+fun <T> List<T>.component1(): T
+fun <K, V> Map.Entry<K, V>.component1(): K
+fun UIntArray.component1(): UInt
+fun ULongArray.component1(): ULong
+fun UByteArray.component1(): UByte
+fun UShortArray.component1(): UShort.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/PlayerTrackAdapter.kt:82:40 Function 'component2()' is ambiguous for this expression: 
+fun <T> Array<out T>.component2(): T
+fun ByteArray.component2(): Byte
+fun ShortArray.component2(): Short
+fun IntArray.component2(): Int
+fun LongArray.component2(): Long
+fun FloatArray.component2(): Float
+fun DoubleArray.component2(): Double
+fun BooleanArray.component2(): Boolean
+fun CharArray.component2(): Char
+fun <T> List<T>.component2(): T
+fun <K, V> Map.Entry<K, V>.component2(): V
+fun UIntArray.component2(): UInt
+fun ULongArray.component2(): ULong
+fun UByteArray.component2(): UByte
+fun UShortArray.component2(): UShort.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/PlayerTrackAdapter.kt:83:17 Argument type mismatch: actual type is 'Pair<Int, Float>', but 'K (of fun <K> WHEN_CALL)' was expected.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/PlayerTrackAdapter.kt:84:18 Argument type mismatch: actual type is 'Pair<uninferred A (of fun <A, B> A.to), uninferred B (of fun <A, B> A.to)>', but 'K (of fun <K> WHEN_CALL)' was expected.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/PlayerTrackAdapter.kt:84:36 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/PlayerTrackAdapter.kt:84:36 Unresolved reference. None of the following candidates is applicable because of a receiver type mismatch:
+fun <A, B> A.to(that: B): Pair<A, B>
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/PlayerTrackAdapter.kt:153:52 Argument type mismatch: actual type is 'ImageHolder?', but 'ImageHolder' was expected.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/PlayerTrackAdapter.kt:154:83 Argument type mismatch: actual type is 'Function0<Unit>', but 'Function2<ImageView, Drawable?, Unit>' was expected.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/PlayerTrackAdapter.kt:155:29 Unresolved reference 'it'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/PlayerTrackAdapter.kt:156:52 Unresolved reference 'resources'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/PlayerTrackAdapter.kt:158:33 Unresolved reference 'it'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/more/PlayerMoreFragment.kt:32:66 No value passed for parameter 'fragment'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/more/PlayerMoreFragment.kt:53:63 No value passed for parameter 'context'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/more/PlayerMoreFragment.kt:53:77 Unresolved reference 'dpToPx'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/more/PlayerMoreFragment.kt:62:9 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/more/PlayerMoreFragment.kt:62:17 Argument type mismatch: actual type is 'MutableStateFlow<UiViewModel.Insets>', but 'LifecycleOwner' was expected.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/more/PlayerMoreFragment.kt:62:17 No value passed for parameter 'flow'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/more/PlayerMoreFragment.kt:62:43 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/more/PlayerMoreFragment.kt:63:27 Unresolved reference 'top'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/more/PlayerMoreFragment.kt:64:49 Unresolved reference 'top'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/more/PlayerMoreFragment.kt:68:9 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/more/PlayerMoreFragment.kt:68:17 Argument type mismatch: actual type is 'MutableStateFlow<Float>', but 'LifecycleOwner' was expected.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/more/PlayerMoreFragment.kt:68:17 No value passed for parameter 'flow'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/more/PlayerMoreFragment.kt:68:46 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/more/PlayerMoreFragment.kt:73:9 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/more/PlayerMoreFragment.kt:73:17 Argument type mismatch: actual type is 'MutableStateFlow<Int>', but 'LifecycleOwner' was expected.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/more/PlayerMoreFragment.kt:73:17 No value passed for parameter 'flow'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/more/PlayerMoreFragment.kt:73:45 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/more/PlayerMoreFragment.kt:78:9 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/more/PlayerMoreFragment.kt:78:17 Argument type mismatch: actual type is 'MutableStateFlow<PlayerColors?>', but 'LifecycleOwner' was expected.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/more/PlayerMoreFragment.kt:78:17 No value passed for parameter 'flow'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/more/PlayerMoreFragment.kt:78:45 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/more/PlayerMoreFragment.kt:79:61 Unresolved reference 'defaultPlayerColors'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/more/PlayerMoreFragment.kt:82:71 Unresolved reference 'background'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/more/PlayerMoreFragment.kt:91:28 Unresolved reference 'background'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/more/PlayerMoreFragment.kt:92:28 Unresolved reference 'onBackground'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/more/PlayerMoreFragment.kt:101:28 Unresolved reference 'onBackground'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/more/info/TrackInfoFragment.kt:16:25 Argument type mismatch: actual type is 'View', but 'Fragment' was expected.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/more/info/TrackInfoFragment.kt:16:31 No value passed for parameter 'view'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/more/info/TrackInfoViewModel.kt:38:48 None of the following candidates is applicable:
+fun isLoaded(bundle: Bundle?): Boolean
+fun isLoaded(item: MediaItem): Boolean
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/more/info/TrackInfoViewModel.kt:38:82 None of the following candidates is applicable:
+fun getTrack(bundle: Bundle?): Track
+fun getTrack(item: MediaItem): Track
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/more/info/TrackInfoViewModel.kt:41:61 Unresolved reference 'id'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/more/lyrics/LyricsItemAdapter.kt:67:18 Unresolved reference 'observe'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/more/lyrics/LyricsItemAdapter.kt:67:60 Unresolved reference 'it'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/more/lyrics/LyricsItemAdapter.kt:68:18 Unresolved reference 'observe'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/more/lyrics/LyricsItemAdapter.kt:68:76 Unresolved reference 'it'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/more/lyrics/LyricsItemAdapter.kt:69:42 Unresolved reference 'createListener'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/more/lyrics/LyricsItemAdapter.kt:73:18 Unresolved reference 'observe'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/more/lyrics/LyricsItemAdapter.kt:75:13 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/more/lyrics/LyricsItemAdapter.kt:75:13 Function 'component1()' is ambiguous for this expression: 
+fun <T> Array<out T>.component1(): T
+fun ByteArray.component1(): Byte
+fun ShortArray.component1(): Short
+fun IntArray.component1(): Int
+fun LongArray.component1(): Long
+fun FloatArray.component1(): Float
+fun DoubleArray.component1(): Double
+fun BooleanArray.component1(): Boolean
+fun CharArray.component1(): Char
+fun <T> List<T>.component1(): T
+fun <K, V> Map.Entry<K, V>.component1(): K
+fun UIntArray.component1(): UInt
+fun ULongArray.component1(): ULong
+fun UByteArray.component1(): UByte
+fun UShortArray.component1(): UShort.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/more/lyrics/LyricsItemAdapter.kt:75:13 Function 'component2()' is ambiguous for this expression: 
+fun <T> Array<out T>.component2(): T
+fun ByteArray.component2(): Byte
+fun ShortArray.component2(): Short
+fun IntArray.component2(): Int
+fun LongArray.component2(): Long
+fun FloatArray.component2(): Float
+fun DoubleArray.component2(): Double
+fun BooleanArray.component2(): Boolean
+fun CharArray.component2(): Char
+fun <T> List<T>.component2(): T
+fun <K, V> Map.Entry<K, V>.component2(): V
+fun UIntArray.component2(): UInt
+fun ULongArray.component2(): ULong
+fun UByteArray.component2(): UByte
+fun UShortArray.component2(): UShort.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/more/lyrics/LyricsItemAdapter.kt:77:65 Function invocation 'append(...)' expected.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/more/upnext/QueueFragment.kt:21:75 No value passed for parameter 'fragment'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/more/upnext/QueueFragment.kt:83:25 Argument type mismatch: actual type is 'View', but 'Fragment' was expected.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/more/upnext/QueueFragment.kt:83:31 Argument type mismatch: actual type is 'Boolean', but 'View' was expected.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/more/upnext/QueueFragment.kt:103:9 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/more/upnext/QueueFragment.kt:103:17 Argument type mismatch: actual type is 'MutableStateFlow<PlayerState.Current?>', but 'LifecycleOwner' was expected.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/more/upnext/QueueFragment.kt:103:17 No value passed for parameter 'flow'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/more/upnext/QueueFragment.kt:103:48 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/more/upnext/QueueFragment.kt:104:9 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/more/upnext/QueueFragment.kt:104:17 Argument type mismatch: actual type is 'MutableSharedFlow<Unit>', but 'LifecycleOwner' was expected.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/more/upnext/QueueFragment.kt:104:17 No value passed for parameter 'flow'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/more/upnext/QueueFragment.kt:104:38 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/player/quality/QualitySelectionBottomSheet.kt:51:13 Unresolved reference 'UiUtils'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/playlist/SelectableMediaAdapter.kt:12:88 Unresolved reference 'bind'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/playlist/SelectableMediaAdapter.kt:63:27 Unresolved reference 'bind'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/playlist/delete/DeletePlaylistBottomSheet.kt:13:45 Unresolved reference 'createSnack'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/playlist/delete/DeletePlaylistBottomSheet.kt:44:21 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/playlist/delete/DeletePlaylistBottomSheet.kt:44:35 Argument type mismatch: actual type is 'String', but 'Bundle' was expected.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/playlist/delete/DeletePlaylistBottomSheet.kt:44:43 Argument type mismatch: actual type is 'Playlist', but 'String' was expected.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/playlist/delete/DeletePlaylistBottomSheet.kt:44:43 No value passed for parameter 'value'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/playlist/delete/DeletePlaylistBottomSheet.kt:53:14 Property delegate must have a 'getValue(DeletePlaylistBottomSheet, KProperty1<DeletePlaylistBottomSheet, ERROR CLASS: Cannot infer argument for type parameter T>)' method. None of the following functions is applicable:
+fun <T> Lazy<T>.getValue(thisRef: Any?, property: KProperty<*>): T
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/playlist/delete/DeletePlaylistBottomSheet.kt:53:17 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/playlist/delete/DeletePlaylistBottomSheet.kt:53:17 Not enough information to infer type argument for 'T'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/playlist/delete/DeletePlaylistBottomSheet.kt:53:17 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/playlist/delete/DeletePlaylistBottomSheet.kt:53:17 Not enough information to infer type argument for 'T'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/playlist/delete/DeletePlaylistBottomSheet.kt:53:29 Unresolved reference 'getSerialized'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/playlist/delete/DeletePlaylistBottomSheet.kt:53:63 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/playlist/delete/DeletePlaylistBottomSheet.kt:53:63 Not enough information to infer type argument for 'T'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/playlist/delete/DeletePlaylistBottomSheet.kt:62:9 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/playlist/delete/DeletePlaylistBottomSheet.kt:62:17 Argument type mismatch: actual type is 'StateFlow<DeleteState>', but 'LifecycleOwner' was expected.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/playlist/delete/DeletePlaylistBottomSheet.kt:62:17 No value passed for parameter 'flow'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/playlist/delete/DeletePlaylistBottomSheet.kt:62:39 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/playlist/delete/DeletePlaylistBottomSheet.kt:65:26 'when' expression must be exhaustive. Add an 'else' branch.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/playlist/delete/DeletePlaylistBottomSheet.kt:68:25 Unresolved reference 'createSnack'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/playlist/edit/EditPlaylistFragment.kt:128:69 Unresolved reference 'toText'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/playlist/save/MediaItemAdapter.kt:53:21 Unresolved reference 'bind'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/playlist/save/SaveToPlaylistBottomSheet.kt:38:85 Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type 'Result<EchoMediaItem>?'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/settings/AudioEffectsFragment.kt:19:74 No value passed for parameter 'fragment'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/settings/AudioEffectsFragment.kt:46:59 No value passed for parameter 'fragment'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/settings/AudioEffectsFragment.kt:65:37 Argument type mismatch: actual type is 'FastScrollNestedScrollView', but 'Fragment' was expected.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/settings/AudioEffectsFragment.kt:65:72 Argument type mismatch: actual type is 'UiViewModel', but 'View' was expected.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/settings/BaseSettingsFragment.kt:24:66 No value passed for parameter 'fragment'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/settings/BaseSettingsFragment.kt:36:40 Argument type mismatch: actual type is 'View', but 'Fragment' was expected.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/settings/BaseSettingsFragment.kt:36:40 No value passed for parameter 'view'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/settings/BaseSettingsFragment.kt:56:37 Argument type mismatch: actual type is 'RecyclerView', but 'Fragment' was expected.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/settings/BaseSettingsFragment.kt:56:72 Argument type mismatch: actual type is 'UiViewModel', but 'View' was expected.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/ui/settings/SettingsOtherFragment.kt:24:22 No value passed for parameter 'fragment'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/utils/ui/GradientDrawable.kt:33:35 Unresolved reference 'isRTL'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/utils/ui/GradientDrawable.kt:71:11 Unresolved reference 'blurred'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/utils/ui/RulerAdapter.kt:44:44 Unresolved reference 'dpToPx'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/utils/ui/RulerAdapter.kt:141:36 Unresolved reference 'dpToPx'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/utils/ui/UiUtils.kt:498:55 Unresolved reference 'track'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/utils/ui/UiUtils.kt:500:34 Argument type mismatch: actual type is 'TaskType', but 'Context' was expected.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/utils/ui/UiUtils.kt:500:50 Argument type mismatch: actual type is 'String', but 'TaskType' was expected.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/utils/ui/UiUtils.kt:500:50 No value passed for parameter 'title'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/utils/ui/UiUtils.kt:571:53 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/utils/ui/UiUtils.kt:571:53 Not enough information to infer type argument for 'T'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/utils/ui/UiUtils.kt:576:9 Cannot infer type for this parameter. Specify it explicitly.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/utils/ui/UiUtils.kt:576:9 Not enough information to infer type argument for 'R'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/utils/ui/UiUtils.kt:576:23 Unresolved reference 'ContinuationCallback'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/utils/ui/UiUtils.kt:677:21 Unresolved reference 'animateTranslation'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/utils/ui/UiUtils.kt:680:37 Unresolved reference 'it'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/utils/ui/prefs/ColorPickerDialog.kt:16:57 No value passed for parameter 'fragment'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/widget/BaseWidget.kt:67:59 Unresolved reference 'unlikeCommand'.
+e: file:///C:/Users/joaom/Documents/GitHub/Music_Hub/app/src/main/java/com/joaomagdaleno/music_hub/widget/WidgetPlayerListener.kt:29:39 Unresolved reference 'getParcel'.
+
+> Task :app:compileDebugKotlin FAILED
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:compileDebugKotlin'.
+> A failure occurred while executing org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction
+   > Compilation error. See log for more details
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to generate a Build Scan (Powered by Develocity).
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 2m 45s
+23 actionable tasks: 2 executed, 21 up-to-date
+Configuration cache entry reused.

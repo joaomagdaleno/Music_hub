@@ -19,12 +19,9 @@ import com.google.android.material.chip.ChipGroup
 import com.joaomagdaleno.music_hub.R
 import com.joaomagdaleno.music_hub.common.models.Streamable
 import com.joaomagdaleno.music_hub.databinding.DialogPlayerQualitySelectionBinding
-import com.joaomagdaleno.music_hub.playback.MediaItemUtils.backgroundIndex
-import com.joaomagdaleno.music_hub.playback.MediaItemUtils.serverIndex
-import com.joaomagdaleno.music_hub.playback.MediaItemUtils.serverWithDownloads
-import com.joaomagdaleno.music_hub.playback.MediaItemUtils.subtitleIndex
-import com.joaomagdaleno.music_hub.playback.MediaItemUtils.track
-import com.joaomagdaleno.music_hub.utils.ui.openFragment
+import com.joaomagdaleno.music_hub.playback.MediaItemUtils
+import com.joaomagdaleno.music_hub.utils.ui.UiUtils
+import com.joaomagdaleno.music_hub.utils.ui.UiUtils.openFragment
 import com.joaomagdaleno.music_hub.ui.player.PlayerViewModel
 import com.joaomagdaleno.music_hub.ui.player.quality.FormatUtils.getDetails
 import com.joaomagdaleno.music_hub.ui.player.quality.FormatUtils.getSelected
@@ -37,7 +34,7 @@ import com.joaomagdaleno.music_hub.utils.ui.AutoClearedValue.Companion.autoClear
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
 
 class QualitySelectionBottomSheet : BottomSheetDialogFragment() {
-    var binding by autoCleared<DialogPlayerQualitySelectionBinding>()
+    var binding by autoCleared<DialogPlayerQualitySelectionBinding>(this)
     private val viewModel by activityViewModel<PlayerViewModel>()
 
     override fun onCreateView(
@@ -52,20 +49,20 @@ class QualitySelectionBottomSheet : BottomSheetDialogFragment() {
         binding.topAppBar.setNavigationOnClickListener { dismiss() }
         binding.topAppBar.setOnMenuItemClickListener {
             dismiss()
-            requireActivity().openFragment<SettingsPlayerFragment>()
+            UiUtils.openFragment<SettingsPlayerFragment>(requireActivity())
             true
         }
 
-        observe(viewModel.buffering) {
+        observe(viewLifecycleOwner, viewModel.buffering) {
             binding.progressIndicator.isVisible = it
         }
-        observe(viewModel.playerState.current) { current ->
+        observe(viewLifecycleOwner, viewModel.playerState.current) { current ->
             val item = current?.mediaItem ?: return@observe
-            val track = item.track
+            val track = MediaItemUtils.getTrack(item)
             binding.run {
                 applyChips(
-                    item.serverWithDownloads(requireContext()),
-                    streamableServer, streamableServerGroup, item.serverIndex
+                    MediaItemUtils.serverWithDownloads(requireContext(), item),
+                    streamableServer, streamableServerGroup, MediaItemUtils.getServerIndex(item)
                 ) {
                     it ?: return@applyChips
                     viewModel.changeServer(it)
@@ -74,22 +71,22 @@ class QualitySelectionBottomSheet : BottomSheetDialogFragment() {
                 streamableServerGroup.isVisible = true
 
                 applyChips(
-                    listOf(null, *track.backgrounds.toTypedArray()), streamableBackgrounds,
-                    streamableBackgroundGroup, item.backgroundIndex + 1
+                    listOf<Streamable?>(null) + track.backgrounds, streamableBackgrounds,
+                    streamableBackgroundGroup, MediaItemUtils.getBackgroundIndex(item) + 1
                 ) {
                     viewModel.changeBackground(it)
                 }
 
                 applyChips(
-                    listOf(null, *track.subtitles.toTypedArray()), streamableSubtitles,
-                    streamableSubtitleGroup, item.subtitleIndex + 1
+                    listOf<Streamable?>(null) + track.subtitles, streamableSubtitles,
+                    streamableSubtitleGroup, MediaItemUtils.getSubtitleIndex(item) + 1
                 ) {
                     viewModel.changeSubtitle(it)
                 }
             }
         }
 
-        observe(viewModel.serverAndTracks) { (tracks, server, index) ->
+        observe(viewLifecycleOwner, viewModel.serverAndTracks) { (tracks, server, index) ->
             val list = if (server != null && !server.merged) server.streams else listOf()
             binding.run {
                 applyChips(
@@ -98,12 +95,12 @@ class QualitySelectionBottomSheet : BottomSheetDialogFragment() {
                     it.title ?: getString(R.string.quality_x, it.quality)
                 }
             }
-            val details = tracks?.getDetails(requireContext(), server, index)?.joinToString("\n")
+            val details = tracks?.let { FormatUtils.getDetails(it, requireContext(), server, index) }?.joinToString("\n")
             binding.streamableInfo.text = details
             binding.streamableInfo.isVisible = !details.isNullOrBlank()
 
             val audios = tracks?.groups?.filter { it.type == C.TRACK_TYPE_AUDIO }
-            val videos = tracks?.groups?.filter { it.type == C.TRACK_TYPE_VIDEO }
+            val videos = emptyList<Tracks.Group>() // tracks?.groups?.filter { it.type == C.TRACK_TYPE_VIDEO }
             val subtitles = tracks?.groups?.filter { it.type == C.TRACK_TYPE_TEXT }
 
             val onClick: Chip.(Pair<Tracks.Group, Int>?) -> Unit = {
@@ -113,13 +110,13 @@ class QualitySelectionBottomSheet : BottomSheetDialogFragment() {
 
             binding.run {
                 applyChips(audios, trackAudios, trackAudiosGroup, onClick) {
-                    it.toAudioDetails()
+                    FormatUtils.toAudioDetails(it)
                 }
-                applyChips(videos, trackVideos, trackVideosGroup, onClick) {
-                    it.toVideoDetails()
-                }
+                // applyChips(videos, trackVideos, trackVideosGroup, onClick) {
+                //    FormatUtils.toVideoDetails(it)
+                // }
                 applyChips(subtitles, trackSubtitles, trackSubtitlesGroup, onClick) {
-                    it.toSubtitleDetails()
+                    FormatUtils.toSubtitleDetails(it)
                 }
             }
         }
@@ -133,7 +130,7 @@ class QualitySelectionBottomSheet : BottomSheetDialogFragment() {
         onClick: Chip.(Pair<Tracks.Group, Int>?) -> Unit,
         text: (Format) -> String,
     ) {
-        val (trackGroups, select) = groups.orEmpty().getSelected()
+        val (trackGroups, select) = groups?.let { FormatUtils.getSelected(it) } ?: (emptyList<Pair<Tracks.Group, Int>>() to null)
         applyChips(trackGroups, textView, chipGroup, select, onClick) {
             val format = it.first.getTrackFormat(it.second)
             text(format)

@@ -17,6 +17,7 @@ import com.google.android.material.button.MaterialButton
 import com.joaomagdaleno.music_hub.R
 import com.joaomagdaleno.music_hub.databinding.FragmentPlayerMoreBinding
 import com.joaomagdaleno.music_hub.ui.common.UiViewModel
+import com.joaomagdaleno.music_hub.ui.player.PlayerColors
 import com.joaomagdaleno.music_hub.ui.player.PlayerColors.Companion.defaultPlayerColors
 import com.joaomagdaleno.music_hub.ui.player.more.info.TrackInfoFragment
 import com.joaomagdaleno.music_hub.ui.player.more.lyrics.LyricsFragment
@@ -29,7 +30,7 @@ import org.koin.androidx.viewmodel.ext.android.activityViewModel
 
 class PlayerMoreFragment : Fragment() {
 
-    private var binding by autoCleared<FragmentPlayerMoreBinding>()
+    private var binding by autoCleared<FragmentPlayerMoreBinding>(this)
     private val uiViewModel by activityViewModel<UiViewModel>()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -50,33 +51,36 @@ class PlayerMoreFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         var topInset = 0
-        val topMargin = requireContext().run { if (isLandscape()) 0 else 72.dpToPx(this) }
+        val topMargin = requireContext().run {
+            if (resources.configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE) 0
+            else (72 * resources.displayMetrics.density).toInt()
+        }
         fun updateTranslateY() {
             val offset = uiViewModel.moreSheetOffset.value
             val inverted = 1 - offset
             binding.root.translationY = -topInset * inverted
             binding.playerMoreFragmentContainer.translationY =
-                (1 - offset) * 2 * uiViewModel.systemInsets.value.bottom
+                (1 - offset) * 2 * (uiViewModel.systemInsets.value?.bottom ?: 0)
         }
 
-        observe(uiViewModel.systemInsets) {
-            topInset = it.top + topMargin
-            view.updatePaddingRelative(top = it.top)
+        observe(this, uiViewModel.systemInsets) { insets ->
+            topInset = insets.top + topMargin
+            view.updatePaddingRelative(top = insets.top)
             updateTranslateY()
         }
 
-        observe(uiViewModel.moreSheetOffset) {
+        observe(this, uiViewModel.moreSheetOffset) { offset ->
             updateTranslateY()
-            binding.buttonToggleGroupBg.alpha = it
+            binding.buttonToggleGroupBg.alpha = offset
         }
 
-        observe(uiViewModel.moreSheetState) {
-            if (it == BottomSheetBehavior.STATE_COLLAPSED) binding.buttonToggleGroup.clearChecked()
+        observe(this, uiViewModel.moreSheetState) { state ->
+            if (state == BottomSheetBehavior.STATE_COLLAPSED) binding.buttonToggleGroup.clearChecked()
             else binding.buttonToggleGroup.check(uiViewModel.lastMoreTab)
         }
 
-        observe(uiViewModel.playerColors) { colorsNullable ->
-            val colors = colorsNullable ?: requireContext().defaultPlayerColors()
+        observe(this, uiViewModel.playerColors) { colorsNullable ->
+            val colors = colorsNullable ?: PlayerColors.defaultPlayerColors(requireContext())
             binding.buttonToggleGroupBg.children.forEach {
                 it as MaterialButton
                 it.backgroundTintList = ColorStateList.valueOf(colors.background)

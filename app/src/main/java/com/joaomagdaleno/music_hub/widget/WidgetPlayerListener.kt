@@ -26,7 +26,7 @@ class WidgetPlayerListener(
         future?.addListener({
             val result = future.get()
             if (result?.resultCode == SessionResult.RESULT_SUCCESS) {
-                image = result.extras.getParcel<Bitmap>("image")
+                image = getParcel<Bitmap>(result.extras, "image")
                 update(image)
             }
         }, MoreExecutors.directExecutor())

@@ -13,7 +13,7 @@ class TrackInfoFragment : Fragment(
     R.layout.fragment_player_info
 ), MediaDetailsFragment.Parent {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        setupTransition(view, axis = MaterialSharedAxis.Y)
+        setupTransition(this, view, axis = MaterialSharedAxis.Y)
     }
 
     override val feedId = "player"

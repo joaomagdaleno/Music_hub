@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.DiffUtil
 import com.joaomagdaleno.music_hub.common.models.EchoMediaItem
 import com.joaomagdaleno.music_hub.databinding.ItemShelfMediaBinding
 import com.joaomagdaleno.music_hub.ui.common.GridAdapter
-import com.joaomagdaleno.music_hub.ui.feed.viewholders.MediaViewHolder.Companion.bind
+import com.joaomagdaleno.music_hub.ui.feed.viewholders.MediaViewHolder
 import com.joaomagdaleno.music_hub.utils.ui.scrolling.ScrollAnimListAdapter
 import com.joaomagdaleno.music_hub.utils.ui.scrolling.ScrollAnimViewHolder
 
@@ -50,7 +50,7 @@ class MediaItemAdapter(
 
         fun bind(item: Item) {
             this.item = item
-            binding.bind(item.item)
+            MediaViewHolder.bind(binding, item.item)
             binding.play.isVisible = false
         }
     }

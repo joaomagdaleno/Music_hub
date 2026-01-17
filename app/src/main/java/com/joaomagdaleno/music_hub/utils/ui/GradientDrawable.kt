@@ -19,8 +19,7 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.drawable.toDrawable
 import com.google.android.material.color.MaterialColors
 import com.joaomagdaleno.music_hub.R
-import com.joaomagdaleno.music_hub.utils.image.BlurTransformation.Companion.blurred
-import com.joaomagdaleno.music_hub.utils.ui.UiUtils.isRTL
+import com.joaomagdaleno.music_hub.utils.image.BlurTransformation
 
 object GradientDrawable {
     fun applyNav(
@@ -30,7 +29,7 @@ object GradientDrawable {
         full: Boolean = true,
     ) {
         val color = MaterialColors.getColor(view, R.attr.navBackground)
-        val isRTL = !view.context.isRTL()
+        val isRTL = !UiUtils.isRTL(view.context)
         view.background = PaintDrawable().apply {
             setShape(RectShape())
             shaderFactory = object : ShapeDrawable.ShaderFactory() {
@@ -68,7 +67,7 @@ object GradientDrawable {
                 intrinsicWidth.coerceAtLeast(1),
                 intrinsicHeight.coerceAtLeast(1),
             )
-        }.blurred(view.context)
+        }.let { BlurTransformation.blurred(it, view.context) }
         return PaintDrawable().apply {
             setShape(RectShape())
             paint.shader = null

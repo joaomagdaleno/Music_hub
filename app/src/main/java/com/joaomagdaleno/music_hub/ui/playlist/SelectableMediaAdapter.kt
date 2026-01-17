@@ -5,11 +5,13 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import com.joaomagdaleno.music_hub.R
+import com.joaomagdaleno.music_hub.common.models.Artist
 import com.joaomagdaleno.music_hub.common.models.EchoMediaItem
+import com.joaomagdaleno.music_hub.common.models.Track
 import com.joaomagdaleno.music_hub.databinding.ItemMediaSelectableBinding
 import com.joaomagdaleno.music_hub.databinding.ItemSelectableHeaderBinding
 import com.joaomagdaleno.music_hub.ui.common.GridAdapter
-import com.joaomagdaleno.music_hub.ui.feed.viewholders.shelf.ShelfViewHolder.Companion.bind
+import com.joaomagdaleno.music_hub.ui.feed.viewholders.MediaViewHolder
 import com.joaomagdaleno.music_hub.utils.ui.scrolling.ScrollAnimListAdapter
 import com.joaomagdaleno.music_hub.utils.ui.scrolling.ScrollAnimRecyclerAdapter
 import com.joaomagdaleno.music_hub.utils.ui.scrolling.ScrollAnimViewHolder
@@ -60,7 +62,19 @@ class SelectableMediaAdapter(
         fun bind(item: Pair<EchoMediaItem, Boolean>) {
             val mediaItem = item.first
             this.item = mediaItem
-            binding.media.bind(mediaItem)
+            // Manually bind because we have a different binding class than MediaViewHolder expects
+            binding.media.title.text = mediaItem.title
+            val subtitleText = MediaViewHolder.subtitle(mediaItem, binding.root.context)
+            binding.media.subtitle.text = subtitleText
+            binding.media.subtitle.isVisible = !subtitleText.isNullOrBlank()
+            binding.media.coverContainer.run {
+                MediaViewHolder.applyCover(mediaItem, cover, listBg1, listBg2, icon)
+                isPlaying.setBackgroundResource(
+                    if (mediaItem is Artist) R.drawable.rounded_rectangle_cover_profile
+                    else R.drawable.rounded_rectangle_cover
+                )
+            }
+            // binding.media.play.isVisible = mediaItem !is Track // 'play' not available in this binding
             binding.selected.isVisible = item.second
         }
     }

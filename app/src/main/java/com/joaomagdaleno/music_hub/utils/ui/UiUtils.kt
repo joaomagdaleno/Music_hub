@@ -59,8 +59,7 @@ import com.joaomagdaleno.music_hub.common.models.Track
 import com.joaomagdaleno.music_hub.di.App
 import com.joaomagdaleno.music_hub.download.exceptions.DownloadException
 import com.joaomagdaleno.music_hub.download.tasks.BaseTask.Companion.getTitle
-import com.joaomagdaleno.music_hub.playback.MediaItemUtils.serverIndex
-import com.joaomagdaleno.music_hub.playback.MediaItemUtils.track
+import com.joaomagdaleno.music_hub.playback.MediaItemUtils
 import com.joaomagdaleno.music_hub.playback.exceptions.PlayerException
 import com.joaomagdaleno.music_hub.ui.common.ExceptionFragment
 import com.joaomagdaleno.music_hub.ui.common.SnackBarHandler
@@ -118,7 +117,7 @@ object UiUtils {
     }
 
     fun configureAppBar(layout: AppBarLayout, block: (offset: Float) -> Unit) {
-        val settings = layout.context.getSettings()
+        val settings = getSettings(layout.context)
         val isGradient = settings.getBoolean(BACKGROUND_GRADIENT, true)
         val extra = if (isGradient) -191 else 0
         layout.addOnOffsetChangedListener { _, verticalOffset ->
@@ -190,7 +189,7 @@ object UiUtils {
     }
 
     fun applyGradient(fragment: Fragment, view: View, drawable: Drawable?) {
-        val settings = fragment.requireContext().getSettings()
+        val settings = getSettings(fragment.requireContext())
         val isGradient = settings.getBoolean(BACKGROUND_GRADIENT, true)
         val colorDrawable = if (isGradient) {
             drawable ?: MaterialColors.getColor(view, androidx.appcompat.R.attr.colorPrimary)
@@ -202,7 +201,7 @@ object UiUtils {
     fun applyInsets(fragment: Fragment, vararg flows: Flow<*>, block: UiViewModel.(Insets) -> Unit) {
         val viewModel by fragment.activityViewModels<UiViewModel>()
         val flowsList = listOf(viewModel.combined) + flows
-        fragment.observe(flowsList.merge()) { viewModel.block(viewModel.combined.value) }
+        observe(fragment, flowsList.merge()) { viewModel.block(viewModel.combined.value) }
     }
 
     fun applyInsetsWithChild(
@@ -213,7 +212,7 @@ object UiUtils {
         block: UiViewModel.(Insets) -> Unit = {}
     ) {
         val viewModel by fragment.activityViewModels<UiViewModel>()
-        fragment.observe(viewModel.combined) { insets ->
+        observe(fragment, viewModel.combined) { insets ->
             child?.updatePaddingRelative(
                 bottom = insets.bottom + dpToPx(child.context, bottom),
             )
@@ -281,7 +280,7 @@ object UiUtils {
         val activity = fragment.requireActivity()
         val viewModel by activity.viewModel<UiViewModel>()
         val backPress = viewModel.backPressCallback()
-        fragment.observe(viewModel.playerSheetState) {
+        observe(fragment, viewModel.playerSheetState) {
             backPress.isEnabled = it == STATE_EXPANDED
             callback?.invoke(it)
         }
@@ -299,14 +298,14 @@ object UiUtils {
     fun setupPlayerBehavior(owner: LifecycleOwner, viewModel: UiViewModel, view: View) {
         val behavior = BottomSheetBehavior.from(view)
         viewModel.playerBehaviour = WeakReference(behavior)
-        owner.observe(viewModel.moreSheetState) { behavior.isDraggable = it == STATE_COLLAPSED }
+        observe(owner, viewModel.moreSheetState) { behavior.isDraggable = it == STATE_COLLAPSED }
         viewModel.playerBackPressCallback = createBehaviorBackPressCallback(behavior) {
             viewModel.playerBackProgress.value = it
         }
 
         val combined =
             viewModel.run { playerNavViewInsets.combine(systemInsets) { nav: Insets, _: Insets -> nav } }
-        owner.observe(combined) { it: Insets ->
+        observe(owner, combined) { it: Insets ->
             val bottomPadding = dpToPx(view.context, 8)
             val collapsedCoverSize =
                 view.resources.getDimensionPixelSize(com.joaomagdaleno.music_hub.R.dimen.collapsed_cover_size) + bottomPadding
@@ -496,9 +495,9 @@ object UiUtils {
 
     fun getExceptionTitle(context: Context, throwable: Throwable): String? = when (throwable) {
         is UnknownHostException, is UnresolvedAddressException -> context.getString(R.string.no_internet)
-        is PlayerException -> "${throwable.mediaItem?.track?.title}: ${getFinalExceptionTitle(context, throwable.cause)}"
+        is PlayerException -> "${throwable.mediaItem?.let { MediaItemUtils.getTrack(it) }?.title}: ${getFinalExceptionTitle(context, throwable.cause)}"
         is DownloadException -> {
-            val title = getTitle(throwable.type, throwable.downloadEntity.track.getOrNull()?.title ?: "???")
+            val title = getTitle(context, throwable.type, throwable.downloadEntity.track.getOrNull()?.title ?: "???")
             "${title}: ${getFinalExceptionTitle(context, throwable.cause)}"
         }
         else -> null
@@ -512,8 +511,8 @@ object UiUtils {
     private fun getExceptionDetails(throwable: Throwable): String? = when (throwable) {
         is PlayerException -> throwable.mediaItem?.let {
             """
-            Track: ${Serializer.toJson(it.track)}
-            Stream: ${it.run { Serializer.toJson(track.servers.getOrNull(serverIndex)) }}
+            Track: ${Serializer.toJson(MediaItemUtils.getTrack(it))}
+            Stream: ${it.run { Serializer.toJson(MediaItemUtils.getTrack(it).servers.getOrNull(MediaItemUtils.getServerIndex(it))) }}
         """.trimIndent()
         }
         is DownloadException -> """
@@ -562,7 +561,7 @@ object UiUtils {
     }
 
     fun setupExceptionHandler(activity: MainActivity, handler: SnackBarHandler) {
-        activity.observe(handler.app.throwFlow) { throwable ->
+        observe(activity, handler.app.throwFlow) { throwable ->
             val message = getExceptionMessage(activity, throwable, null)
             handler.create(message)
         }
@@ -574,7 +573,7 @@ object UiUtils {
             .url("https://paste.rs")
             .post(data.trace.toRequestBody())
             .build()
-        runCatching { ContinuationCallback.await(exceptionClient.newCall(request)).body?.string() }
+        runCatching { com.joaomagdaleno.music_hub.common.helpers.ContinuationCallback.await(exceptionClient.newCall(request)).body?.string() }
     }
 
     fun setupSnackBar(
@@ -610,10 +609,10 @@ object UiUtils {
             snackBar.show()
         }
 
-        activity.observe(handler.app.messageFlow) { message ->
+        observe(activity, handler.app.messageFlow) { message ->
             createSnackBar(message)
         }
-        activity.observe(uiViewModel.combined) { _ ->
+        observe(activity, uiViewModel.combined) { _ ->
             snackBars.values.forEach { updateInsets(it) }
         }
         return handler
@@ -651,7 +650,7 @@ object UiUtils {
         ViewCompat.setOnApplyWindowInsetsListener(root) { _, insets ->
             uiViewModel.setSystemInsets(activity, insets)
             val navBarSize = uiViewModel.systemInsets.value.bottom
-            val full = activity.getSettings().getBoolean(UiViewModel.NAVBAR_GRADIENT, true)
+            val full = getSettings(activity).getBoolean(UiViewModel.NAVBAR_GRADIENT, true)
             GradientDrawable.applyNav(navView, isRail, navBarSize, !full)
             insets
         }
@@ -664,7 +663,7 @@ object UiUtils {
             activity.findViewById<View>(it.itemId).setOnClickListener { _ ->
                 uiViewModel.run {
                     if (navigation.value == navIds.indexOf(it.itemId))
-                        emit(navigationReselected, navIds.indexOf(it.itemId))
+                        emit(activity, navigationReselected, navIds.indexOf(it.itemId))
                 }
                 navView.selectedItemId = it.itemId
             }
@@ -675,10 +674,10 @@ object UiUtils {
             val insets =
                 uiViewModel.setPlayerNavViewInsets(activity, isMainFragment, isRail)
             val isPlayerCollapsed = uiViewModel.playerSheetState.value != STATE_EXPANDED
-            navView.animateTranslation(isRail, isMainFragment, isPlayerCollapsed, animate) {
+            AnimationUtils.animateTranslation(navView, isRail, isMainFragment, isPlayerCollapsed, animate) { offset ->
                 uiViewModel.setNavInsets(insets)
                 if (isPlayerCollapsed) navView.updateLayoutParams<MarginLayoutParams> {
-                    bottomMargin = -it.toInt()
+                    bottomMargin = -offset.toInt()
                 }
             }
         }
@@ -690,8 +689,8 @@ object UiUtils {
             uiViewModel.isMainFragment.value = isMain
             animateNav(true)
         }
-        activity.observe(uiViewModel.navigation) { navView.selectedItemId = uiViewModel.navIds[it] }
-        activity.observe(uiViewModel.playerSheetOffset) {
+        observe(activity, uiViewModel.navigation) { navView.selectedItemId = uiViewModel.navIds[it] }
+        observe(activity, uiViewModel.playerSheetOffset) {
             if (!uiViewModel.isMainFragment.value) return@observe
             val offset = max(0f, it)
             if (isRail) navView.translationX = -navView.width * offset

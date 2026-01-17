@@ -223,7 +223,7 @@ abstract class AndroidAutoCallback(
         ) = run {
             val shelf = listsMap[id]!!
             when (shelf) {
-                is Shelf.Lists.Categories -> shelf.list.map { echoMediaItemToMediaItem(context, it, origin) }
+                is Shelf.Lists.Categories -> shelf.list.map { shelfToMediaItem(context, it, origin) }
                 is Shelf.Lists.Items -> shelf.list.map { echoMediaItemToMediaItem(context, it, origin) }
                 is Shelf.Lists.Tracks -> shelf.list.map { trackToMediaItem(context, it, origin) }
             } + listOfNotNull(

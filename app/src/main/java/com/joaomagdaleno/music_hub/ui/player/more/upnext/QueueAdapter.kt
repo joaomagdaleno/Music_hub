@@ -87,7 +87,7 @@ class QueueAdapter(
         val (current, item) = getItem(position)
         val isCurrent = current != null
         val isPlaying = current == true
-        val track = MediaItemUtils.track(item)
+        val track = MediaItemUtils.getTrack(item)
         bind(holder.binding, track)
         isPlaying(holder.binding, isPlaying)
         holder.binding.playlistItemClose.isVisible = !inactive

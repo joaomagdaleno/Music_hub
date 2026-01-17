@@ -20,7 +20,7 @@ import com.joaomagdaleno.music_hub.ui.feed.FeedLoadingAdapter
 import com.joaomagdaleno.music_hub.ui.feed.viewholders.MediaViewHolder
 import com.joaomagdaleno.music_hub.ui.media.MediaFragment
 import com.joaomagdaleno.music_hub.ui.media.MediaViewModel
-import com.joaomagdaleno.music_hub.ui.media.more.MoreButton.Companion.button
+import com.joaomagdaleno.music_hub.ui.media.more.button
 import com.joaomagdaleno.music_hub.ui.player.PlayerViewModel
 import com.joaomagdaleno.music_hub.ui.player.audiofx.AudioEffectsBottomSheet
 import com.joaomagdaleno.music_hub.ui.player.more.lyrics.LyricsItemAdapter
@@ -177,7 +177,7 @@ class MediaMoreBottomSheet : BottomSheetDialogFragment(R.layout.dialog_media_mor
             if (isEditable) button(
                 "edit_playlist", R.string.edit_playlist, R.drawable.ic_edit_note
             ) {
-                openItemFragment<EditPlaylistFragment>(
+                openEditFragment<EditPlaylistFragment>(
                     origin, item, loaded
                 )
             } else null,
@@ -282,7 +282,7 @@ class MediaMoreBottomSheet : BottomSheetDialogFragment(R.layout.dialog_media_mor
         dismiss()
     }
 
-    private inline fun <reified T : Fragment> openItemFragment(
+    private inline fun <reified T : Fragment> openEditFragment(
         origin: String?, item: EchoMediaItem?, loaded: Boolean = false
     ) {
         origin ?: return

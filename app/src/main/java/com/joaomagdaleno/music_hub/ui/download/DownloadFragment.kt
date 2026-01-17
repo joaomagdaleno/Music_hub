@@ -58,7 +58,7 @@ class DownloadFragment : Fragment(R.layout.fragment_download) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val binding = FragmentDownloadBinding.bind(view)
-        AnimationUtils.setupTransition(view)
+        AnimationUtils.setupTransition(this, view)
         UiUtils.applyBackPressCallback(this)
         UiUtils.configureAppBar(binding.appBarLayout) { offset ->
             binding.toolbarOutline.alpha = offset
